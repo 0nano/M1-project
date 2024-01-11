@@ -1,0 +1,24 @@
+---
+- name: Déploiement de machines virtuelles sur VMware Workstation
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    esxi_hostname: "localhost"
+    vm_name: "BASTION"
+    vm_template: "/mnt/c/Users/guiro/OneDrive/Documents/Virtual\ Machines/BASTION/BASTION.vmx"
+    vcenter_username: "Root"  # Remplacez par votre nom d'utilisateur ESXi
+    vcenter_password: "vmware"  # Ajoutez un mot de passe bidon
+
+  tasks:
+    - name: Déploiement de la machine virtuelle
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_hostname }}"
+        validate_certs: no
+        name: "{{ vm_name }}"
+        state: poweredon
+        template: "{{ vm_template }}"
+        wait_for_ip_address: true
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"  # Utilisez le mot de passe bidon
+      delegate_to: localhost
