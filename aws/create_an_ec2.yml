@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  vars:
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: <MyKeyPair> # Change for your key pair
+    image_id: ami-0005e0cfe09cc9050 # Lastest version of Amazon Linux
+  tasks:
+    - name: start an instance and Add EBS
+      amazon.aws.ec2_instance:
+        name: "Demo Instance" 
+        region: "{{ region }}"
+        aws_access_key: "{{ec2_access_key}}"  # From vault
+        aws_secret_key: "{{ec2_secret_key}}"  # From vault
+        instance_type: "{{ instance_type }}"
+        key_name: "{{ key_name }}"
+        image_id: "{{ image_id }}"
+        # security_group: default # Change for your security group
+        wait: yes
+        volumes:
+          - device_name: /dev/sda1
+            ebs:
+              volume_size: 8
+              delete_on_termination: true
