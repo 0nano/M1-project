@@ -28,3 +28,12 @@ openssl rand -base64 2048 > vault.pass
 ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
 ```
 With this method, you have to add the option '--vault-password-file' every time you run the playbook or editing the vault.
+
+## How to get the AWS credentials
+1. Go to the AWS console
+2. Click on Services then on Security and Identity & Compliance
+3. Click on IAM
+4. Go on Users in the left menu and click on an user or create a new one
+5. Click on the tab Security credentials
+6. Click on Create access key then select CLI
+7. Continue and create the key and copy the Access key ID and the Secret access key to the vault.
