@@ -9,13 +9,13 @@
     - name: start an instance and Add EBS
       amazon.aws.ec2_instance:
         name: "Demo Instance" 
-        region: {{ region }}
-        aws_access_key: {{ec2_access_key}}  # From vault
-        aws_secret_key: {{ec2_secret_key}}  # From vault
-        # aws_session_token: {{ec2_session_token}}  # From vault, it's very important to add this line to use temporary credentials
-        instance_type: {{ instance_type }}
+        region: "{{ region }}"
+        aws_access_key: "{{ ec2_access_key }}"  # From vault
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault
+        # aws_session_token: "{{ ec2_session_token }}"  # From vault, it's very important to add this line to use temporary credentials
+        instance_type: "{{ instance_type }}"
         key_name: "{{ key_name }}"
-        image_id: {{ image_id }}
+        image_id: "{{ image_id }}"
         # security_group: default # Change for your security group
         wait: yes
         # volumes add EBS volume in addition to the root volume (8GB)
