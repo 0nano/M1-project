@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  vars:
+    region: us-east-1
+  tasks:
+    - name: 
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: <Your-VPC-ID>
+        aws_access_key: "{{ ec2_access_key }}"  # From vault
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault
+        # aws_session_token: "{{ ec2_session_token }}" # From vault, it's very important to add this line to use temporary credentials
+        region: "{{ region }}"
+        tags:
+          Name: Public
+        subnets:
+          - <Your-Subnet-ID>
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: <Your-IGW-ID>
+          - dest: ::/0
+            gateway_id: <Your-IGW-ID>

@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  vars:
+    vpc_id: <Your-VPC-ID>
+    region: us-east-1
+  tasks:
+    - name: Create subnet
+      amazon.aws.ec2_vpc_subnet:
+        aws_access_key: "{{ ec2_access_key }}"  # From vault
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault
+        # aws_session_token: "{{ ec2_session_token }}" # From vault, it's very important to add this line to use temporary credentials
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        cidr: 10.0.1.16/28 # Change for your CIDR
+        tags:
+          Name: <Your-Subnet-Name>
