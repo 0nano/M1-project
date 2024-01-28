@@ -17,6 +17,7 @@
         key_name: "{{ key_name }}"
         image_id: "{{ image_id }}"
         # security_group: default # Change for your security group
+        # vpc_subnet_id: subnet-12345678 # Change for your subnet
         wait: yes
         # volumes add EBS volume in addition to the root volume (8GB)
         volumes:

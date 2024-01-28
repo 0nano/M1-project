@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  vars:
+    region: us-east-1
+  tasks:
+    - name: "Create a SG for a VPC"
+      amazon.aws.ec2_security_group:
+        vpc_id: vpc-12345678
+        aws_access_key: "{{ ec2_access_key }}"  # From vault
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault
+        # aws_session_token: "{{ ec2_session_token }}" # From vault, it's very important to add this line to use temporary credentials
+        name: <Your-SG-Name>
+        description: <Your-SG-Description>
+        region: "{{ region }}"
+        rules: # Rules for inbound traffic
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+        egress_rules: # Rules for outbound traffic
+          - proto: all
+            cidr_ip: 0.0.0.0/0

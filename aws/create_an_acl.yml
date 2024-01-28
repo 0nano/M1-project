@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  vars:
+    region: us-east-1
+  tasks:
+    - name: "Create a network ACL"
+      community.aws.ec2_vpc_nacl:
+        vpc_id: vpc-12345678
+        name: <Your-ACL-Name>
+        aws_access_key: "{{ ec2_access_key }}"  # From vault
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault
+        # aws_session_token: "{{ ec2_session_token }}" # From vault, it's very important to add this line to use temporary credentials
+        region: "{{ region }}"
+        subnets: ['subnet-1', 'subnet-2']
+        ingress:
+            # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
+            - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+            - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+            - [205, 'tcp', 'allow', '::/0', null, null, 80, 80]
+            - [300, 'icmp', 'allow', '0.0.0.0/0', 0, 8]
+            - [305, 'ipv6-icmp', 'allow', '::/0', 0, 8]
+        egress:
+            - [100, 'all', 'allow', '0.0.0.0/0', null, null, null, null]
+            - [105, 'all', 'allow', '::/0', null, null, null, null]
