@@ -1,0 +1,80 @@
+---
+- hosts: localhost
+  vars:
+    region: us-east-1
+  tasks:
+    - name: Create VPC
+      amazon.aws.ec2_vpc_net:
+        name: test
+        cidr_block: 10.0.0.0/16
+        region: "{{ region }}"
+      register: vpc
+      
+    - name: Set vpc_id
+      set_fact:
+        vpc_id: "{{ vpc.vpc.id }}"
+      
+    - name: Create a public subnet in the VPC
+      amazon.aws.ec2_vpc_subnet:  
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        cidr: 10.0.1.0/24
+        tags:
+          Name: Public subnet
+      register: pub_subnet
+
+    - name: Create a private subnet in the VPC
+      amazon.aws.ec2_vpc_subnet:  
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        cidr: 10.0.2.0/24
+        tags:
+          Name: Private subnet
+      register: priv_subnet
+
+    - name: Create an internet gateway
+      amazon.aws.ec2_vpc_igw:
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        tags:
+          Name: Internet gateway
+      register: igw
+
+    - name: Get the route table id
+      amazon.aws.ec2_vpc_route_table_info:
+        region: "{{ region }}"
+        filters:
+          vpc-id: "{{ vpc_id }}"
+      register: default_route_table
+
+    - name: Create a nat gateway
+      amazon.aws.ec2_vpc_nat_gateway:
+        region: "{{ region }}"
+        subnet_id: "{{ pub_subnet.subnet.id }}"
+        tags:
+          Name: Nat gateway
+        wait: true
+      register: nat_gateway
+
+    - name: Modify the default private route table
+      amazon.aws.ec2_vpc_route_table:
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        lookup: id
+        route_table_id: "{{ default_route_table.route_tables.0.id }}"
+        subnets:
+          - "{{ priv_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ nat_gateway.nat_gateway_id }}"
+    
+    - name: Create a public route table
+      amazon.aws.ec2_vpc_route_table:
+        region: "{{ region }}"
+        vpc_id: "{{ vpc_id }}"
+        subnets:
+          - "{{ pub_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table
