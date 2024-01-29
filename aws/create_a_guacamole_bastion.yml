@@ -1,0 +1,104 @@
+---
+- hosts: localhost
+  vars_files:
+    - "group_vars/all/vault.yml"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3 
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: vockey # Change for your key pair
+    sec_group: "test-security-group"
+    #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
+    image_id: ami-058bd2d568351da34 # Debian 12 OS
+    guacamole_docker_repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+    default_container_name: guacamole_docker
+    default_container_image: guacamole/guacd
+  tasks:
+    - name: Create a security group
+      amazon.aws.ec2_security_group:
+        name: "{{ sec_group }}"
+        description: "Allow SSH and HTTP"
+        region: "{{ region }}"
+        aws_access_key: ASIA54QUK3T3EDM2MY2F
+        aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
+        aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+        rules: 
+          - proto: tcp
+            ports:
+              - 22
+              - 80
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow ssh and http
+
+    - name: Start an instance and add EBS
+      amazon.aws.ec2_instance:
+        name: "WTF"    
+        region: "{{ region }}"
+        aws_access_key: ASIA54QUK3T3EDM2MY2F
+        aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
+        aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ sec_group }}"
+        key_name: "{{ key_name }}"
+        image_id: "{{ image_id }}"
+        termination_protection: true # because if not the EC2 instance will be terminated after playbook run
+        state: running
+      #   tags:
+      #     Environment: Bastion testing
+      # tags: ['never', 'create_ec2_instance']
+
+    - name: Facts
+      block: # this block prints out instance data
+
+      - name: Get instances facts
+        ec2_instance_info:
+          aws_access_key: ASIA54QUK3T3EDM2MY2F
+          aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
+          aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+          region: "{{ region }}"
+        register: result
+
+      - name: Instances ID
+        debug:
+          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
+        loop: "{{ result.instances }}"
+      tags: always
+
+
+    - name: Install dependencies for Docker and Docker Compose
+      become: yes
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add Docker repository
+      become: yes
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
+        state: present
+
+    - name: Install Docker
+      become: yes
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Install Docker Compose
+      become: yes
+      apt:
+        name: docker-compose
+        state: present
+
+    
