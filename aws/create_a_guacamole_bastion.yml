@@ -1,7 +1,5 @@
 ---
 - hosts: localhost
-  vars_files:
-    - "group_vars/all/vault.yml"
   vars:
     ansible_python_interpreter: /usr/bin/python3 
     region: us-east-1
@@ -19,9 +17,9 @@
         name: "{{ sec_group }}"
         description: "Allow SSH and HTTP"
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3EDM2MY2F
-        aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
-        aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+        aws_access_key: ASIA54QUK3T3AKXWRJPC
+        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
         rules: 
           - proto: tcp
             ports:
@@ -32,17 +30,18 @@
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "WTF"    
+        name: "Wosaaaaaaaa"    
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3EDM2MY2F
-        aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
-        aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+        aws_access_key: ASIA54QUK3T3AKXWRJPC
+        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
         key_name: "{{ key_name }}"
         image_id: "{{ image_id }}"
         termination_protection: true # because if not the EC2 instance will be terminated after playbook run
         state: running
+      register: ec2
       #   tags:
       #     Environment: Bastion testing
       # tags: ['never', 'create_ec2_instance']
@@ -52,9 +51,9 @@
 
       - name: Get instances facts
         ec2_instance_info:
-          aws_access_key: ASIA54QUK3T3EDM2MY2F
-          aws_secret_key: MH8BrCtaXUijaDLNthg8KjUIS3hYGqkoBQDVQx4S
-          aws_session_token: FwoGZXIvYXdzEEIaDFPlxQzlHb55y7Ud1yLVAUZAsp7dwqsGw/punQQksoc51I+wq+hjPO3Rp5CtXg09Sul9Xlck7HXz5VNc5spXxuk6gpNi9sjOAyR7hctzgf314tilVoIwRfqVzEfZOZwzz/rJPxd6blF2hN8s3II5Gnc1kH8i/QVcHZqJWiHtwUmEQYs3GUgE6+YoC6F5MhRlhrOdqct7DAb97cy+ZNIqmxJu14aiFWfKqw04VUY/OXzMTnDHT7XZmKktmKoALmcIFjyUVv2MfCKGn1sr8tyxFzL8bigTDoENezranVmCCc0HEIHlJSjrvN2tBjItoMVhLSJhgh9vjMi9QdZkG5R6ndjWY5DkyENIgnQbKK7Me6qMtBKlCVcjgokv
+          aws_access_key: ASIA54QUK3T3AKXWRJPC
+          aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+          aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
           region: "{{ region }}"
         register: result
 
@@ -64,41 +63,78 @@
         loop: "{{ result.instances }}"
       tags: always
 
+    - name: "Add new Instance to Host group"
+      add_host:
+        hostname: "{{ ec2.instances.0.public_ip_address }}"
+        groupname: webserver
 
-    - name: Install dependencies for Docker and Docker Compose
-      become: yes
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg-agent
-          - software-properties-common
-        state: present
-        update_cache: yes
+    - name: "Wait for SSH in Instance"
+      wait_for:
+        host: "{{ ec2.instances.0.public_ip_address }}"
+        port: 22  
 
-    - name: Add Docker GPG key
-      become: yes
-      apt_key:
-        url: https://download.docker.com/linux/debian/gpg
-        state: present
+- name: bzfjzf
+  hosts: webserver
+  remote_user: admin
+  become: true
+  vars:
+     ansible_ssh_private_key_file: /home/isen/ansible_quickstart/aws/labsuser.pem 
+  tasks:
+   - name: flag
+     command: touch flag
 
-    - name: Add Docker repository
-      become: yes
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
-        state: present
+   - name: install docker and docker-compose
+     become: yes
+     apt:
+       update_cache: yes
+       name: "{{ item }}"
+       state: present
+     with_items:
+       - apt-transport-https
+       - ca-certificates
+       - curl
+       - lsb-release
+       - gnupg2
+       - python3-pip
+       
+   - name: Add Docker GPG key
+     shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
 
-    - name: Install Docker
-      become: yes
-      apt:
-        name: docker-ce
-        state: present
+   - name: Add the repository to fetch the docker package
+     shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
 
-    - name: Install Docker Compose
-      become: yes
-      apt:
-        name: docker-compose
-        state: present
+   - name: Update source list and then install docker
+     apt: update_cache=yes name=docker-ce state=latest 
+   - name: Install the Docker module for Python, required by ansible
+     apt:
+      name: python3-docker
+      state: present
 
+   - name: Install docker-compose
+     apt:
+      name: docker-compose
+      state: present
+
+   - name: Install guacamole on docker
+     git:
+      repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+      dest: /home/admin/guacamole-docker-compose
+      clone: yes
+      force: yes
+      update: yes
+      version: master
+    # become: yes
+    # become_user: admin
+    # tags: ['never', 'install_guacamole_docker']
+  
+   - name: Start guacamole docker
+     command: docker-compose up -d
+     args:
+       chdir: /home/admin/guacamole-docker-compose
+      # become: yes
+      # become_user: admin
+      # tags: ['never', 'start_guacamole_docker']
     
+    
+
+
