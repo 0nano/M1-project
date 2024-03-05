@@ -1,0 +1,76 @@
+// automate deployement of SES Amazon Simple Email Service 
+
+---
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3 
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: vockey # Change for your key pair
+    sec_group: "test-security-group"
+    #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
+    image_id: ami-058bd2d568351da34 # Debian 12 OS
+    guacamole_docker_repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+    default_container_name: guacamole_docker
+    default_container_image: guacamole/guacd
+  tasks:
+    - name: Create a security group
+      amazon.aws.ec2_security_group:
+        name: "{{ sec_group }}"
+        description: "Allow SSH and HTTP"
+        region: "{{ region }}"
+        aws_access_key: ASIA54QUK3T3AKXWRJPC
+        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
+        rules: 
+          - proto: tcp
+            ports:
+              - 22
+              - 80
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow ssh and http
+
+    - name: Start an instance and add EBS
+      amazon.aws.ec2_instance:
+        name: "SES"    
+        region: "{{ region }}"
+        aws_access_key: ASIA54QUK3T3AKXWRJPC
+        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ sec_group }}"
+        key_name: "{{ key_name }}"
+        image_id: "{{ image_id }}"
+        termination_protection: true # because if not the EC2 instance will be terminated after playbook run
+        state: running
+      register: ec2
+      #   tags:
+      #     Environment: Bastion testing
+      # tags: ['never', 'create_ec2_instance']
+
+    - name: Facts
+      block: # this block prints out instance data
+
+      - name: Get instances facts
+        ec2_instance_info:
+          aws_access_key: ASIA54QUK3T3AKXWRJPC
+          aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
+          aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
+          region: "{{ region }}"
+        register: result
+
+      - name: Instances ID
+        debug:
+          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
+        loop: "{{ result.instances }}"
+      tags: always
+
+    - name: "Add new Instance to Host group"
+      add_host:
+        hostname: "{{ ec2.instances.0.public_ip_address }}"
+        groupname: webserver
+
+    - name: "Wait for SSH in Instance"
+      wait_for:
+        host: "{{ ec2.instances.0.public_ip_address }}"
+        port: 22  
