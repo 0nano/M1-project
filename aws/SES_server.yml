@@ -19,9 +19,6 @@
         name: "{{ sec_group }}"
         description: "Allow SSH and HTTP"
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3AKXWRJPC
-        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
-        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
         rules: 
           - proto: tcp
             ports:
@@ -34,9 +31,6 @@
       amazon.aws.ec2_instance:
         name: "SES"    
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3AKXWRJPC
-        aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
-        aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
         key_name: "{{ key_name }}"
@@ -53,9 +47,6 @@
 
       - name: Get instances facts
         ec2_instance_info:
-          aws_access_key: ASIA54QUK3T3AKXWRJPC
-          aws_secret_key: 6ioa4CUNefafOT/bFIr2CvV2Wl7i6RK1Ow0L++DB
-          aws_session_token: FwoGZXIvYXdzEIr//////////wEaDJXdJgoksPLyg5Jg6SLVAZs52m50UnvtisccsV+R1vXv9Gdyl5Hzd1X+c7CvMQBrHAn9lz7fAZcL9VLXs2/WEb3FnqMwv2KgPdZlERhvBKp2+rxAI0Ipc0yzCoj1iI7/ZeWbxhFYHjhvhep3Eji0ezK5YaW1rFqhjX0qfeLSrdju3cWq1vECJSooGeTpwc1VUyZhQDhZDsXonXNsO8Kue+1ev0xgZf9/cj2KGw5FBSmlTz+T7BqEbjH2UaDdKtMtiim4ZWVwtTnK/V8YoI5+K5nj9rLHL3MIjfoO5BRMypwr//2dgyjZjJavBjItH3ZvHNudmD6BF7/ROzMw2A1OMyksUdqDlutFYp8rXusEyXjlP8DG3ja37zZ1
           region: "{{ region }}"
         register: result
 
