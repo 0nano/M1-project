@@ -17,9 +17,9 @@
         name: "{{ sec_group }}"
         description: "Allow SSH and HTTP"
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3P3C4QV56
-        aws_secret_key: dWQuajI5bgT6imk/cqr8fH19TT0KqkArFcp7gTDy
-        aws_session_token: FwoGZXIvYXdzEJf//////////wEaDElz5EmU5w9homOZkyLVAdhoeDFejziVMExz184GqnRC1bCj6Bv1UdqezzEPArjKVNQE8epVLFdt7IY3ERAxA1YXdYmmYm8DrHHp2Pj1fux8IQm4n3AvxnhQ57l7bewkgobDxB3jESMrbFCijq/pbAcz3/xTn06wiFoeVlFXdpNhD41eofVoWMR0ilOatTEJJG9hdYpyZenrJZ5KjkmuE+HpsBRr8kEJpe98k9ajuD4UKnPdtBX/+nkJhAKxueUNTNmFe5NYeTbQu+PBNFk6hiEBd25nRldEDyQHbOBI83u+X7UC+SiA85ivBjItOaFrSjbu24/hM+yvyc/b+E4w13llJ2gmbsmQ4sF2Y55Jvs+WiXSBsG3xbUTB
+        aws_access_key: ASIA54QUK3T3N36XZN5C
+        aws_secret_key: xWFCtmEknu+yIqMrFGirSpMQ03s4hYAUTJgD6I4C
+        aws_session_token: FwoGZXIvYXdzEKL//////////wEaDANElGzESKdyLAm7yiLVASSBCCSCgT0vsIiEd5Dqedp9ra//1Ywtbpl1UO+QREFV5rrghbVodbtHoancUjRUugVYBrUnuDcM5JjqqBuNm+LExUl4+LCnRI6pfeVOLBDjFrNbxhxoGzqtAmqzoFb0CK5g+jRvoK8qfU4jbTnguUak9HEKQIyhrgnPZuxpzNNxLOEgRbfg5JHZLOgYVh+Fsn6fVtVqGuaiZOVtdIqrjGv4Zq6io20bjYPP0oaDXR7GGKvXXZnUysE5Wss+qMy5V2UBFNJ+SG6VuTS3urqCVzfBWMvEmyitpZuvBjItKqNTWKKqwkFhkJionf/ZWsLeIaD6eQtuqZTHJ+6f6OuStnIUljh0SVW0KEQ4
         rules: 
           - proto: tcp
             ports:
@@ -30,11 +30,11 @@
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "lddzkjdz"    
+        name: "Wosaaaaaaaa"    
         region: "{{ region }}"
-        aws_access_key: ASIA54QUK3T3P3C4QV56
-        aws_secret_key: dWQuajI5bgT6imk/cqr8fH19TT0KqkArFcp7gTDy
-        aws_session_token: FwoGZXIvYXdzEJf//////////wEaDElz5EmU5w9homOZkyLVAdhoeDFejziVMExz184GqnRC1bCj6Bv1UdqezzEPArjKVNQE8epVLFdt7IY3ERAxA1YXdYmmYm8DrHHp2Pj1fux8IQm4n3AvxnhQ57l7bewkgobDxB3jESMrbFCijq/pbAcz3/xTn06wiFoeVlFXdpNhD41eofVoWMR0ilOatTEJJG9hdYpyZenrJZ5KjkmuE+HpsBRr8kEJpe98k9ajuD4UKnPdtBX/+nkJhAKxueUNTNmFe5NYeTbQu+PBNFk6hiEBd25nRldEDyQHbOBI83u+X7UC+SiA85ivBjItOaFrSjbu24/hM+yvyc/b+E4w13llJ2gmbsmQ4sF2Y55Jvs+WiXSBsG3xbUTB
+        aws_access_key: ASIA54QUK3T3N36XZN5C
+        aws_secret_key: xWFCtmEknu+yIqMrFGirSpMQ03s4hYAUTJgD6I4C
+        aws_session_token: FwoGZXIvYXdzEKL//////////wEaDANElGzESKdyLAm7yiLVASSBCCSCgT0vsIiEd5Dqedp9ra//1Ywtbpl1UO+QREFV5rrghbVodbtHoancUjRUugVYBrUnuDcM5JjqqBuNm+LExUl4+LCnRI6pfeVOLBDjFrNbxhxoGzqtAmqzoFb0CK5g+jRvoK8qfU4jbTnguUak9HEKQIyhrgnPZuxpzNNxLOEgRbfg5JHZLOgYVh+Fsn6fVtVqGuaiZOVtdIqrjGv4Zq6io20bjYPP0oaDXR7GGKvXXZnUysE5Wss+qMy5V2UBFNJ+SG6VuTS3urqCVzfBWMvEmyitpZuvBjItKqNTWKKqwkFhkJionf/ZWsLeIaD6eQtuqZTHJ+6f6OuStnIUljh0SVW0KEQ4
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
         key_name: "{{ key_name }}"
@@ -42,18 +42,16 @@
         termination_protection: true # because if not the EC2 instance will be terminated after playbook run
         state: running
       register: ec2
-      #   tags:
-      #     Environment: Bastion testing
-      # tags: ['never', 'create_ec2_instance']
+   
 
     - name: Facts
       block: # this block prints out instance data
 
       - name: Get instances facts
         ec2_instance_info:
-          aws_access_key: ASIA54QUK3T3P3C4QV56
-          aws_secret_key: dWQuajI5bgT6imk/cqr8fH19TT0KqkArFcp7gTDy
-          aws_session_token: FwoGZXIvYXdzEJf//////////wEaDElz5EmU5w9homOZkyLVAdhoeDFejziVMExz184GqnRC1bCj6Bv1UdqezzEPArjKVNQE8epVLFdt7IY3ERAxA1YXdYmmYm8DrHHp2Pj1fux8IQm4n3AvxnhQ57l7bewkgobDxB3jESMrbFCijq/pbAcz3/xTn06wiFoeVlFXdpNhD41eofVoWMR0ilOatTEJJG9hdYpyZenrJZ5KjkmuE+HpsBRr8kEJpe98k9ajuD4UKnPdtBX/+nkJhAKxueUNTNmFe5NYeTbQu+PBNFk6hiEBd25nRldEDyQHbOBI83u+X7UC+SiA85ivBjItOaFrSjbu24/hM+yvyc/b+E4w13llJ2gmbsmQ4sF2Y55Jvs+WiXSBsG3xbUTB
+          aws_access_key: ASIA54QUK3T3N36XZN5C
+          aws_secret_key: xWFCtmEknu+yIqMrFGirSpMQ03s4hYAUTJgD6I4C
+          aws_session_token: FwoGZXIvYXdzEKL//////////wEaDANElGzESKdyLAm7yiLVASSBCCSCgT0vsIiEd5Dqedp9ra//1Ywtbpl1UO+QREFV5rrghbVodbtHoancUjRUugVYBrUnuDcM5JjqqBuNm+LExUl4+LCnRI6pfeVOLBDjFrNbxhxoGzqtAmqzoFb0CK5g+jRvoK8qfU4jbTnguUak9HEKQIyhrgnPZuxpzNNxLOEgRbfg5JHZLOgYVh+Fsn6fVtVqGuaiZOVtdIqrjGv4Zq6io20bjYPP0oaDXR7GGKvXXZnUysE5Wss+qMy5V2UBFNJ+SG6VuTS3urqCVzfBWMvEmyitpZuvBjItKqNTWKKqwkFhkJionf/ZWsLeIaD6eQtuqZTHJ+6f6OuStnIUljh0SVW0KEQ4
           region: "{{ region }}"
         register: result
 
@@ -73,7 +71,7 @@
         host: "{{ ec2.instances.0.public_ip_address }}"
         port: 22  
 
-- name: FTP_server
+- name: FTP
   hosts: webserver
   remote_user: admin
   become: true
@@ -96,7 +94,7 @@
        - lsb-release
        - gnupg2
        - python3-pip
-       
+
    - name: Add Docker GPG key
      shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
 
@@ -105,31 +103,25 @@
 
    - name: Update source list and then install docker
      apt: update_cache=yes name=docker-ce state=latest 
-   - name: Install the Docker module for Python, required by ansible
-     apt:
-      name: python3-docker
-      state: present
-
+     
    - name: Install docker-compose
      apt:
       name: docker-compose
       state: present
 
-   - name: Install ftp server on docker
+   - name: Clone Alpine FTP server Docker Compose configuration
      git:
-      repo: git://github.com/stilliard/docker-pure-ftpd.git
-      dest: /home/admin/ftp-docker-compose
-      clone: yes
-      force: yes
-      update: yes
-      version: master
-  
-   - name: Start ftp docker
+       repo: "https://github.com/example/alpine-ftp-server-docker-compose.git"
+       dest: /home/admin/alpine-ftp-server-docker-compose
+       clone: yes
+       force: yes
+       update: yes
+       version: master
+
+   - name: Start Alpine FTP server Docker Compose
      command: docker-compose up -d
      args:
-       chdir: /home/admin/ftp-docker-compose
-   
-    
-    
+       chdir: /home/admin/alpine-ftp-server-docker-compose
+
 
 
