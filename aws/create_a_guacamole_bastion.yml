@@ -1,5 +1,7 @@
 ---
 - hosts: localhost
+  vars_files:
+    - config_vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3 
     region: us-east-1
@@ -11,6 +13,8 @@
     guacamole_docker_repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
     default_container_name: guacamole_docker
     default_container_image: guacamole/guacd
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: Create a security group
       amazon.aws.ec2_security_group:
@@ -69,8 +73,10 @@
   hosts: webserver
   remote_user: admin
   become: true
+  vars_files:
+    - config_vars.yml
   vars:
-    ansible_ssh_private_key_file: /home/isen/test.pem
+    ansible_ssh_private_key_file: "{{ ssh_key }}"
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
    - name: flag
