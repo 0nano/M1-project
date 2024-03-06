@@ -22,13 +22,15 @@
             ports:
               - 22
               - 80
+              - 8080
             cidr_ip: 0.0.0.0/0
             rule_desc: allow ssh and http
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
         name: "Wosaaaaaaaa"    
-        region: "{{ region }}"instance_type: "{{ instance_type }}"
+        region: "{{ region }}"
+        instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
         key_name: "{{ key_name }}"
         image_id: "{{ image_id }}"
@@ -44,7 +46,7 @@
 
       - name: Get instances facts
         ec2_instance_info:
-        region: "{{ region }}"
+          region: "{{ region }}"
         register: result
 
       - name: Instances ID
@@ -68,7 +70,8 @@
   remote_user: admin
   become: true
   vars:
-     ansible_ssh_private_key_file: /home/isen/ansible_quickstart/aws/labsuser.pem 
+    ansible_ssh_private_key_file: /home/isen/test.pem
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
    - name: flag
      command: touch flag
