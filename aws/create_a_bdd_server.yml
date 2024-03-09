@@ -29,7 +29,7 @@
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "AJKFJUHFZ"    
+        name: "AJKFJUHFaaZ"    
         region: "{{ region }}"
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
