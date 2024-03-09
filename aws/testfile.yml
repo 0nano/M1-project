@@ -1,5 +1,7 @@
 ---
 - hosts: localhost
+  vars_files:
+    - config_vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3 
     region: us-east-1
@@ -8,9 +10,6 @@
     sec_group: "test-security-group"
     #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
     image_id: ami-058bd2d568351da34 # Debian 12 OS
-    guacamole_docker_repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
-    default_container_name: guacamole_docker
-    default_container_image: guacamole/guacd
   environment:
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
@@ -19,7 +18,6 @@
         name: "{{ sec_group }}"
         description: "Allow SSH and HTTP"
         region: "{{ region }}"
-
         rules: 
           - proto: tcp
             ports:
@@ -31,7 +29,7 @@
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "Wosaaaaaaaa"    
+        name: "BDD SERVER"    
         region: "{{ region }}"
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
@@ -49,7 +47,6 @@
 
       - name: Get instances facts
         ec2_instance_info:
-
           region: "{{ region }}"
         register: result
 
@@ -69,7 +66,7 @@
         host: "{{ ec2.instances.0.public_ip_address }}"
         port: 22  
 
-- name: bzfjzf
+- name: "Create a BDD server"
   hosts: webserver
   remote_user: admin
   become: true
@@ -102,6 +99,7 @@
    - name: Add the repository to fetch the docker package
      shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
 
+
    - name: Update source list and then install docker
      apt: update_cache=yes name=docker-ce state=latest 
    - name: Install the Docker module for Python, required by ansible
@@ -113,27 +111,56 @@
      apt:
       name: docker-compose
       state: present
-
-   - name: Install guacamole on docker
-     git:
-      repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
-      dest: /home/admin/guacamole-docker-compose
-      clone: yes
-      force: yes
-      update: yes
-      version: master
-    # become: yes
-    # become_user: admin
-    # tags: ['never', 'install_guacamole_docker']
   
-   - name: Start guacamole docker
-     command: docker-compose up -d
-     args:
-       chdir: /home/admin/guacamole-docker-compose
-      # become: yes
-      # become_user: admin
-      # tags: ['never', 'start_guacamole_docker']
+   - name: Install dependencies for postgresql
+     apt:
+       name: python3-psycopg2
+       state: present
+
+   - name: Install postgresql on container
+     docker_container:
+       name: postgresql
+       image: postgres:latest
+       state: started
+       ports:
+         - "5432:5432"
+       env:
+         POSTGRES_USER: "admin"
+         POSTGRES_PASSWORD: "admin"
+         POSTGRES_DB: "bdd"
+   - name: Create table in PostgreSQL
+     community.general.postgresql_db:
+      name: "medical_files"
+      state: present
+      login_user: "admin"
+      login_password: "admin"
+      login_db: "bdd"
+      login_host: "localhost"
+      login_port: 5432
+      encoding: UTF8
+      lc_collate: "en_US.UTF-8"
+      lc_ctype: "en_US.UTF-8"
+      tablespace: "pg_default"
+      owner: "admin"
+      columns:
+        - name: "name"
+          type: "varchar(255)"
+          nullable: false
+        - name: "age"
+          type: "integer"
+          nullable: true
+      rows: [] 
+   
+
     
-    
+         
+     
+# Pour se connecter dans docker sudo docker run -it --rm postgres psql -h 172.17.0.2 -U postgres
+
+
+
+
+
+
 
 

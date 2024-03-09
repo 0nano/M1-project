@@ -1,7 +1,5 @@
 ---
 - hosts: localhost
-  vars_files:
-    - config_vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3 
     region: us-east-1
@@ -10,8 +8,6 @@
     sec_group: "test-security-group"
     #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
     image_id: ami-058bd2d568351da34 # Debian 12 OS
-  environment:
-    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: Create a security group
       amazon.aws.ec2_security_group:
@@ -23,14 +19,16 @@
             ports:
               - 22
               - 80
-              - 8080
             cidr_ip: 0.0.0.0/0
             rule_desc: allow ssh and http
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "FTP-SERVERRRRRR"    
+        name: "Wosaaaaaaaa"    
         region: "{{ region }}"
+        aws_access_key: ASIA54QUK3T3N36XZN5C
+        aws_secret_key: xWFCtmEknu+yIqMrFGirSpMQ03s4hYAUTJgD6I4C
+        aws_session_token: FwoGZXIvYXdzEKL//////////wEaDANElGzESKdyLAm7yiLVASSBCCSCgT0vsIiEd5Dqedp9ra//1Ywtbpl1UO+QREFV5rrghbVodbtHoancUjRUugVYBrUnuDcM5JjqqBuNm+LExUl4+LCnRI6pfeVOLBDjFrNbxhxoGzqtAmqzoFb0CK5g+jRvoK8qfU4jbTnguUak9HEKQIyhrgnPZuxpzNNxLOEgRbfg5JHZLOgYVh+Fsn6fVtVqGuaiZOVtdIqrjGv4Zq6io20bjYPP0oaDXR7GGKvXXZnUysE5Wss+qMy5V2UBFNJ+SG6VuTS3urqCVzfBWMvEmyitpZuvBjItKqNTWKKqwkFhkJionf/ZWsLeIaD6eQtuqZTHJ+6f6OuStnIUljh0SVW0KEQ4
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
         key_name: "{{ key_name }}"
@@ -38,10 +36,6 @@
         termination_protection: true # because if not the EC2 instance will be terminated after playbook run
         state: running
       register: ec2
-      #   tags:
-      #     Environment: Bastion testing
-      # tags: ['never', 'create_ec2_instance']
-
     - name: Facts
       block: # this block prints out instance data
 
@@ -66,16 +60,12 @@
         host: "{{ ec2.instances.0.public_ip_address }}"
         port: 22  
 
-
-- name: create FTP server
+- name: FTP
   hosts: webserver
   remote_user: admin
   become: true
-  vars_files:
-    - config_vars.yml
   vars:
-    ansible_ssh_private_key_file: "{{ ssh_key }}"
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+     ansible_ssh_private_key_file: /home/isen/ansible_quickstart/aws/labsuser.pem 
   tasks:
    - name: flag
      command: touch flag
@@ -102,12 +92,7 @@
 
    - name: Update source list and then install docker
      apt: update_cache=yes name=docker-ce state=latest 
-
-   - name: Install the Docker module for Python, required by ansible
-     apt:
-      name: python3-docker
-      state: present
-
+     
    - name: Install docker-compose
      apt:
       name: docker-compose
