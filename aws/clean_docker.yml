@@ -1,0 +1,17 @@
+# clean_docker.yml
+
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+  tasks:
+    - name: Get list of running containers
+      command: docker ps -q
+      register: running_containers
+      changed_when: false
+      check_mode: no
+
+    - name: Stop and remove running containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ running_containers.stdout_lines }}"
