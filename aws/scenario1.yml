@@ -1,0 +1,24 @@
+# scenario1.yml
+
+# Déploiement en mode local
+- hosts: localhost
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3    
+  tasks:
+    - name: "Déploiement en mode local du serveur de base de données"
+      include_tasks: local_bdd_server.yml
+      when: mode == "local"
+
+    - name: "Déploiement en mode local du serveur FTP"
+      include_tasks: local_ftp_server.yml
+      when: mode == "local"
+    
+# Deploiement via aws
+    - name: "Deploiement de l'instance EC2"
+      include_tasks: create_ec2.yml
+      when: mode == "aws" 
+
+    - name: "Deploiement du serveur de base de donnée via AWS"
+      include_tasks: create_a_bdd_server.yml
+      when: mode == "aws"
