@@ -1,0 +1,48 @@
+- name: Create a security group
+  amazon.aws.ec2_security_group:
+    name: "{{ sec_group }}"
+    description: "Allow SSH and HTTP"
+    region: "{{ region }}"
+    rules: 
+      - proto: tcp
+        ports:
+          - 22
+          - 80
+          - 8080
+        cidr_ip: 0.0.0.0/0
+        rule_desc: allow ssh and http
+
+- name: Start an instance and add EBS
+  amazon.aws.ec2_instance:
+    name: "BDD ec2 instance "    
+    region: "{{ region }}"
+    instance_type: "{{ instance_type }}"
+    security_group: "{{ sec_group }}"
+    key_name: "{{ key_name }}"
+    image_id: "{{ image_id }}"
+    termination_protection: true # because if not the EC2 instance will be terminated after playbook run
+    state: running
+  register: ec2
+
+- name: Facts
+  block: # this block prints out instance data
+    - name: Get instances facts
+      ec2_instance_info:
+        region: "{{ region }}"
+      register: result
+
+    - name: Instances ID
+      debug:
+        msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
+      loop: "{{ result.instances }}"
+  tags: always
+
+- name: "Add new Instance to Host group"
+  add_host:
+    hostname: "{{ ec2.instances.0.public_ip_address }}"
+    groupname: webserver
+
+- name: "Wait for SSH in Instance"
+  wait_for:
+    host: "{{ ec2.instances.0.public_ip_address }}"
+    port: 22

@@ -3,20 +3,23 @@ import subprocess
 def main():
     print("Welcome to the deployment program!")
     print("Please choose the action:")
-    print("1. Deploy")
-    print("2. Remove Docker containers")
-    print("3. Exit")
+    print("1. Deploy Scenario 1")
+    print("2. Deploy Scenario 2")
+    print("3. Remove Docker containers")
+    print("4. Exit")
 
     choice = input("Your choice: ")
 
     if choice == "1":
         deploy()
     elif choice == "2":
-        remove_docker_containers()
+        print("Scenario 2 is not available yet")
     elif choice == "3":
-        print("Exiting...")
+        remove_docker_containers()
+    elif choice == "4":
+        print("Exit ...")
     else:
-        print("Invalid choice. Please choose 1, 2, or 3.")
+        print("Invalid choice. Please choose 1, 2, 3, or 4.")
         return
 
 def deploy():

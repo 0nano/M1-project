@@ -1,3 +1,5 @@
+# docker_setup_tasks.yml
+
 - name: install docker and docker-compose
   become: yes
   apt:
@@ -12,8 +14,17 @@
     - gnupg2
     - python3-pip
     
-- name: Add Docker GPG key
-  shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
+- name: Check if Docker GPG key exists
+  stat:
+    path: /usr/share/keyrings/docker-archive-keyring.gpg
+  register: gpg_key_status
+
+- name: Add Docker GPG key if it doesn't exist
+  become: yes
+  shell: >
+    curl -fsSL https://download.docker.com/linux/debian/gpg |
+    gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  when: not gpg_key_status.stat.exists
 
 - name: Add the repository to fetch the docker package
   shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
