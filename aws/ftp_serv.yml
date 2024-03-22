@@ -1,127 +1,55 @@
----
-- hosts: localhost
-  vars_files:
-    - config_vars.yml
-  vars:
-    ansible_python_interpreter: /usr/bin/python3 
-    region: us-east-1
-    instance_type: t2.micro
-    key_name: vockey # Change for your key pair
-    sec_group: "test-security-group"
-    #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
-    image_id: ami-058bd2d568351da34 # Debian 12 OS
-  environment:
-    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
-  tasks:
-    - name: Create a security group
-      amazon.aws.ec2_security_group:
-        name: "{{ sec_group }}"
-        description: "Allow SSH and HTTP"
-        region: "{{ region }}"
-        rules: 
-          - proto: tcp
-            ports:
-              - 22
-              - 80
-              - 8080
-            cidr_ip: 0.0.0.0/0
-            rule_desc: allow ssh and http
+- name: "----------------create the flag of the ftp server ------"
+  command: touch flag
 
-    - name: Start an instance and add EBS
-      amazon.aws.ec2_instance:
-        name: "FTP___SERVER"    
-        region: "{{ region }}"
-        instance_type: "{{ instance_type }}"
-        security_group: "{{ sec_group }}"
-        key_name: "{{ key_name }}"
-        image_id: "{{ image_id }}"
-        termination_protection: true # because if not the EC2 instance will be terminated after playbook run
-        state: running
-      register: ec2
-      #   tags:
-      #     Environment: Bastion testing
-      # tags: ['never', 'create_ec2_instance']
+- name: install docker and docker-compose
+  become: yes
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - lsb-release
+    - gnupg2
+    - python3-pip
 
-    - name: Facts
-      block: # this block prints out instance data
+- name: Check if Docker GPG key exists
+  stat:
+    path: /usr/share/keyrings/docker-archive-keyring.gpg
+  register: gpg_key_status
 
-      - name: Get instances facts
-        ec2_instance_info:
-          region: "{{ region }}"
-        register: result
+- name: Add Docker GPG key if it doesn't exist
+  become: yes
+  shell: >
+    curl -fsSL https://download.docker.com/linux/debian/gpg |
+    gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  when: not gpg_key_status.stat.exists
 
-      - name: Instances ID
-        debug:
-          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
-        loop: "{{ result.instances }}"
-      tags: always
+- name: Add the repository to fetch the docker package
+  shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
 
-    - name: "Add new Instance to Host group"
-      add_host:
-        hostname: "{{ ec2.instances.0.public_ip_address }}"
-        groupname: webserver
+- name: Update source list and then install docker
+  apt:
+    update_cache: yes
+    name: docker-ce
+    state: latest
 
-    - name: "Wait for SSH in Instance"
-      wait_for:
-        host: "{{ ec2.instances.0.public_ip_address }}"
-        port: 22  
+- name: Install the Docker module for Python, required by ansible
+  apt:
+    name: python3-docker
+    state: present
 
+- name: Install docker-compose
+  apt:
+    name: docker-compose
+    state: present
 
-- name: "Create a FTP server"
-  hosts: webserver
-  remote_user: admin
-  become: true
-  vars_files:
-    - config_vars.yml
-  vars:
-    ansible_ssh_private_key_file: "{{ ssh_key }}"
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-    ftp_container_name: "ftpd_server"
-    ftp_container_port: "21"
-  tasks:
-   - name: flag
-     command: touch flag
+- name: Pull ftp docker image 
+  shell: 'sudo docker pull stilliard/pure-ftpd'
+  become: yes
 
-   - name: install docker and docker-compose
-     become: yes
-     apt:
-       update_cache: yes
-       name: "{{ item }}"
-       state: present
-     with_items:
-       - apt-transport-https
-       - ca-certificates
-       - curl
-       - lsb-release
-       - gnupg2
-       - python3-pip
-       
-   - name: Add Docker GPG key
-     shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
-
-   - name: Add the repository to fetch the docker package
-     shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
-
-
-   - name: Update source list and then install docker
-     apt: update_cache=yes name=docker-ce state=latest 
-   - name: Install the Docker module for Python, required by ansible
-     apt:
-      name: python3-docker
-      state: present
-
-   - name: Install docker-compose
-     apt:
-      name: docker-compose
-      state: present
-
-   - name: Pull ftp docker image 
-     shell: 'sudo docker pull stilliard/pure-ftpd'
-     become: yes
-
-   - name: Run FTP container
-     become: yes
-     shell: ' sudo docker run --rm -d --name ftpd_server -p 21:21 -p 30000-30009:30000-30009 stilliard/pure-ftpd bash /run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P localhost -p 30000:30059'
-      
-
-
+- name: Run FTP container
+  become: yes
+  shell: 'sudo docker run --rm -d --name ftpd_server -p 21:21 -p 30000-30009:30000-30009 stilliard/pure-ftpd bash /run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P localhost -p 30000:30059'

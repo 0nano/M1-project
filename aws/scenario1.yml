@@ -4,7 +4,16 @@
 - hosts: localhost
   become: yes
   vars:
-    ansible_python_interpreter: /usr/bin/python3    
+    ansible_python_interpreter: /usr/bin/python3  
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: vockey # Change for your key pair
+    sec_group: "test-security-group"
+    image_id: ami-058bd2d568351da34 # Debian 12 OS  
+  vars_files:
+    - config_vars.yml
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: "Déploiement en mode local du serveur de base de données"
       include_tasks: local_bdd_server.yml
@@ -19,6 +28,22 @@
       include_tasks: create_ec2.yml
       when: mode == "aws" 
 
+- name: "Deploiement du serveur de base de donnée via AWS"
+  hosts: webserver
+  remote_user: admin
+  become: true
+  vars_files:
+    - config_vars.yml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    ansible_ssh_private_key_file: "{{ ssh_key }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:
     - name: "Deploiement du serveur de base de donnée via AWS"
       include_tasks: create_a_bdd_server.yml
+      when: mode == "aws"
+    - name: "Deploiement du serveur ftp via AWS"
+      include_tasks: ftp_serv.yml
       when: mode == "aws"

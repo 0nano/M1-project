@@ -14,7 +14,7 @@
 
 - name: Start an instance and add EBS
   amazon.aws.ec2_instance:
-    name: "BDD ec2 instance "    
+    name: "BDD ec2 instance"    
     region: "{{ region }}"
     instance_type: "{{ instance_type }}"
     security_group: "{{ sec_group }}"
@@ -46,3 +46,5 @@
   wait_for:
     host: "{{ ec2.instances.0.public_ip_address }}"
     port: 22
+
+
