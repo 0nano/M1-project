@@ -1,5 +1,0 @@
----
-- import_playbook: create_a_basic_machine.yml
-- import_playbook: ftp_serv.yml
-- import_playbook: create_a_guacamole_bastion.yml
-- import_playbook: create_a_bdd_server.yml
