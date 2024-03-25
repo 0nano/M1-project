@@ -15,6 +15,11 @@
   environment:
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
+
+    - name: "Installe et deploy docker"
+      include_tasks: install_docker.yml 
+      when: mode == "local"
+
     - name: "Déploiement en mode local du serveur de base de données"
       include_tasks: create_a_bdd_server.yml
       when: mode == "local"
@@ -41,6 +46,10 @@
   environment:
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
+    - name: "Installe et deploy docker"
+      include_tasks: install_docker.yml 
+      when: mode == "aws"
+
     - name: "Deploiement du serveur de base de donnée via AWS"
       include_tasks: create_a_bdd_server.yml
       when: mode == "aws"
