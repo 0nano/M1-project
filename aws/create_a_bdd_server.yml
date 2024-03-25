@@ -1,9 +1,3 @@
-  # remote_user: admin
-  # become: true
-
-- name: "--------------Create the flag of the BDD server ----------------"  
-  command: touch flag
-
 - name: install docker and docker-compose
   become: yes
   apt:
@@ -17,7 +11,7 @@
     - lsb-release
     - gnupg2
     - python3-pip
-       
+
 - name: Check if Docker GPG key exists
   stat:
     path: /usr/share/keyrings/docker-archive-keyring.gpg

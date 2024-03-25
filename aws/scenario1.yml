@@ -16,11 +16,11 @@
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: "Déploiement en mode local du serveur de base de données"
-      include_tasks: local_bdd_server.yml
+      include_tasks: create_a_bdd_server.yml
       when: mode == "local"
 
     - name: "Déploiement en mode local du serveur FTP"
-      include_tasks: local_ftp_server.yml
+      include_tasks: ftp_serv.yml
       when: mode == "local"
     
 # Deploiement via aws
