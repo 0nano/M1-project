@@ -31,10 +31,20 @@
 # Deploiement via aws
     - name: "Deploiement de l'instance EC2"
       include_tasks: create_ec2.yml
+      vars: 
+        instance_name: "BDD EC2"
+        host_name: "bdd_host"
+      when: mode == "aws" 
+
+    - name: "Deploiement de l'instance EC2"
+      include_tasks: create_ec2.yml
+      vars: 
+        instance_name: "FTP EC2"
+        host_name: "ftp_host"
       when: mode == "aws" 
 
 - name: "Deploiement du serveur de base de donnée via AWS"
-  hosts: webserver
+  hosts: bdd_host
   remote_user: admin
   become: true
   vars_files:
@@ -53,6 +63,25 @@
     - name: "Deploiement du serveur de base de donnée via AWS"
       include_tasks: create_a_bdd_server.yml
       when: mode == "aws"
+
+
+- name: "Deploiement du serveur ftp via AWS"
+  hosts: ftp_host
+  remote_user: admin
+  become: true
+  vars_files:
+    - config_vars.yml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    ansible_ssh_private_key_file: "{{ ssh_key }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:
+    - name: "Installe et deploy docker"
+      include_tasks: install_docker.yml 
+      when: mode == "aws"
+
     - name: "Deploiement du serveur ftp via AWS"
       include_tasks: ftp_serv.yml
       when: mode == "aws"

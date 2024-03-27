@@ -14,7 +14,7 @@
 
 - name: Start an instance and add EBS
   amazon.aws.ec2_instance:
-    name: "BDD ec2 instance"    
+    name: "{{ instance_name }}"  
     region: "{{ region }}"
     instance_type: "{{ instance_type }}"
     security_group: "{{ sec_group }}"
@@ -40,7 +40,7 @@
 - name: "Add new Instance to Host group"
   add_host:
     hostname: "{{ ec2.instances.0.public_ip_address }}"
-    groupname: webserver
+    groupname: "{{host_name}}"
 
 - name: "Wait for SSH in Instance"
   wait_for:
