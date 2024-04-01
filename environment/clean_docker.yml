@@ -67,7 +67,6 @@
       loop: "{{ running_containers.stdout_lines }}"
       when: mode == "aws"
 
-
     - name: Get EC2 instance info
       ec2_instance_info:
         filters:
