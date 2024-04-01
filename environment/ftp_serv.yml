@@ -8,3 +8,5 @@
 
 
   # docker run -e FTP_USER_NAME=admin -e FTP_USER_PASS=admin -e FTP_USER_HOME=/home/admin stilliard/pure-ftpd
+
+  # test
