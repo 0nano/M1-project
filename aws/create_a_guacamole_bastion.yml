@@ -8,7 +8,7 @@
     sec_group: "test-security-group"
     #image_id: ami-0005e0cfe09cc9050 # Latest version of Amazon Linux
     image_id: ami-058bd2d568351da34 # Debian 12 OS
-    guacamole_docker_repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+    m1project_repo: "https://github.com/0nano/M1-project.git"
     default_container_name: guacamole_docker
     default_container_image: guacamole/guacd
   environment:
@@ -79,57 +79,69 @@
     ansible_ssh_private_key_file: "{{ ssh_key }}"
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
-   - name: flag
-     command: touch flag
+   - name: Check If Docker Is Installed
+     command: docker --version
+     register: docker_valid
+     ignore_errors: yes
+     
+   - name: Install Docker and Docker-Compose
+     block:
+       - name: Install dependencies for docker and docker-compose
+         become: yes
+         apt:
+           update_cache: yes
+           name: "{{ item }}"
+           state: present
+         with_items:
+           - apt-transport-https
+           - ca-certificates
+           - curl
+           - lsb-release
+           - gnupg2
+           - python3-pip
+          
+       - name: Add Docker GPG key
+         shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
 
-   - name: install docker and docker-compose
-     become: yes
-     apt:
-       update_cache: yes
-       name: "{{ item }}"
-       state: present
-     with_items:
-       - apt-transport-https
-       - ca-certificates
-       - curl
-       - lsb-release
-       - gnupg2
-       - python3-pip
-       
-   - name: Add Docker GPG key
-     shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
+       - name: Add the repository to fetch the docker package
+         shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
 
-   - name: Add the repository to fetch the docker package
-     shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
+       - name: Update source list and then install docker
+         apt: update_cache=yes name=docker-ce state=latest 
 
-   - name: Update source list and then install docker
-     apt: update_cache=yes name=docker-ce state=latest 
-   - name: Install the Docker module for Python, required by ansible
-     apt:
-      name: python3-docker
-      state: present
+       - name: Install the Docker module for Python, required by ansible
+         apt:
+           name: python3-docker
+           state: present
 
-   - name: Install docker-compose
-     apt:
-      name: docker-compose
-      state: present
+       - name: Install docker-compose
+         apt:
+           name: docker-compose
+           state: present
 
    - name: Install guacamole on docker
      git:
-      repo: "https://github.com/boschkundendienst/guacamole-docker-compose.git"
-      dest: /home/admin/guacamole-docker-compose
-      clone: yes
-      force: yes
-      update: yes
-      version: master
-    # become: yes
-    # become_user: admin
-    # tags: ['never', 'install_guacamole_docker']
-  
+       repo: "https://github.com/0nano/M1-project.git"
+       dest: project
+       clone: yes
+       force: yes
+       update: yes
+       version: Guacamole-bastion
+      
+   - name: Create a folder for guacamole
+     shell: mkdir guacamole && chmod 777 guacamole
+
+   - name: Copy docker-compose file
+     copy:
+       src: project/aws/docker-compose.yml
+       dest: guacamole/docker-compose.yml
+       remote_src: yes
+
+   - name: Create init folder
+     shell: mkdir guacamole/init && chmod 777 guacamole/init && umask 0022 init/
+
    - name: Start guacamole docker
-     command: docker-compose up -d
-     args:
-       chdir: /home/admin/guacamole-docker-compose
+     shell: cd guacamole/ && docker-compose up -d
       # become: yes
       # become_user: admin
       # tags: ['never', 'start_guacamole_docker']
