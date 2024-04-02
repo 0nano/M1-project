@@ -2,7 +2,7 @@
 
 services:
   router:
-    image: router-alpine
+    image: ghcr.io/0nano/router-alpine:latest
     hostname: router1
     privileged: true
     environment: 
@@ -16,21 +16,21 @@ services:
         priority: 200
 
   ftp-server:
-    image: ftp-alpine
+    image: ghcr.io/0nano/ftp-alpine:latest
     hostname: ftp-server
     networks:
       private-net:
         ipv4_address: 10.1.1.3
 
   alpine-ssh:
-    image: alpine-sshd
+    image: ghcr.io/0nano/alpine-sshd:latest
     hostname: apline
     networks:
       private-net:
         ipv4_address: 10.1.1.2
 
   Kali:
-    image: kali-web-simplify
+    image: ghcr.io/0nano/kali-web-simplify:latest
     hostname: kali
     networks:
       private-net:
