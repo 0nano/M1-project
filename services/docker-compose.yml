@@ -38,12 +38,14 @@ services:
 
 networks:
   internet-access:
+    name: internet-access
     attachable: true
     ipam:
       driver: default
       config:
         - subnet: 10.0.1.0/24
   private-net:
+    name: private-net
     attachable: true
     ipam:
       driver: default
