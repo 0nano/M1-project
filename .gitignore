@@ -1,2 +1,4 @@
 aws/credentials
 aws/config_vars.yml
+aws/env/extravars
+aws/artifacts
