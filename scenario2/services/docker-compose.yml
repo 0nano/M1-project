@@ -1,4 +1,4 @@
-# Scenario 1
+# Scenario 2
 
 services:
   router:
@@ -9,32 +9,28 @@ services:
       NAT: "true" 
     networks:
       internet-access:
-        ipv4_address: 10.0.1.254
+        ipv4_address: 10.0.2.254 
         priority: 1000
       private-net:
-        ipv4_address: 10.1.1.254
+        ipv4_address: 10.1.2.254 
         priority: 200
 
-  ftp-server:
-    image: ftp-alpine
-    hostname: ftp-server
+  apache:
+    image: httpd:2.4
+    hostname: apache
+    ports:
+      - "8080:80"
     networks:
       private-net:
-        ipv4_address: 10.1.1.3
+        ipv4_address: 10.1.2.5 
 
-  alpine-ssh:
-    image: alpine-sshd
-    hostname: apline
+  juice-shop:
+    image: bkimminich/juice-shop
+    ports:
+      - "3000:3000"
     networks:
       private-net:
-        ipv4_address: 10.1.1.2
-
-  Kali:
-    image: kali-web-simplify
-    hostname: kali
-    networks:
-      private-net:
-        ipv4_address: 10.1.1.4
+        ipv4_address: 10.1.2.6 
 
 networks:
   internet-access:
@@ -42,10 +38,10 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 10.0.1.0/24
+        - subnet: 10.0.2.0/24 
   private-net:
     attachable: true
     ipam:
       driver: default
       config:
-        - subnet: 10.1.1.0/24
+        - subnet: 10.1.2.0/24 
