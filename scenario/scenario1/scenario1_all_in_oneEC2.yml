@@ -46,6 +46,30 @@
       shell: "cd /home/admin/project/scenario/scenario1/services"
       when: mode == "aws"
 
+    - name: "Construire l'image router-alpine"
+      shell: "docker build -t router-alpine ./router-alpine"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services/router-alpine
+
+    - name: "Construire l'image ftp-alpine"
+      shell: "docker build -t ftp-alpine ./ftp-alpine"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services/ftp-alpine
+
+    - name: "Construire l'image alpine-ssh"
+      shell: "docker build -t alpine-sshd ./alpine-sshd"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services/alpine-sshd
+
+    - name: "Construire l'image kali-web-simplify"
+      shell: "docker build -t kali-web-simplify ./kali"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services/kali-web-simplify
+
     - name: "Lance le docker compose pour installer les services"
       shell: "docker-compose up -d"
       when: mode == "aws"
