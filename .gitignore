@@ -5,3 +5,4 @@ aws/artifacts
 scenario/scenario2/services/__pycache__/inscription.cpython-311.pyc
 scenario/scenario1/services/__pycache__/inscription.cpython-311.pyc
 guacamole/ec2_adress.txt
+scenario/__pycache__/inscription.cpython-311.pyc

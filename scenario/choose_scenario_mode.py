@@ -41,7 +41,7 @@ def deploy(playbook_name):
 
     print(f"Deployment in {mode} mode in progress...")
 
-    with open('../../aws/ec2_adress.txt', 'r') as file:
+    with open('../guacamole/ec2_adress.txt', 'r') as file:
         IP_EC2 = file.read().strip()
 
     subprocess.run(["ansible-playbook", f"{playbook_name}.yml", "-e", f"mode={mode}", "-e", f"IP_EC2={IP_EC2}", "--ask-vault-pass"])
