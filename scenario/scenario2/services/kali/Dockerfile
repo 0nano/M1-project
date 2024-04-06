@@ -1,3 +1,4 @@
+# KALI DU SCENARIO 2 NOT THE SAME COMPONENT AS THE SCENARIO 1
 FROM kalilinux/kali-last-release
 
 # Updating and upgrading the system
@@ -5,9 +6,9 @@ RUN apt update && apt upgrade -y
 
 # Installing the necessary tools based on the kali-tools-web --> add less packages / iputils-ping/iputils-arping / iproute2 net-tools iptables man / lynx
 RUN apt install -y ncrack nikto nmap ftester openssh-server openssh-client sudo \
-httprint hydra dirb webshells tcpdump \
-# Some tools to identify if it's really usefull to have them --> SCENARIO1 NOT USEFULL
-# hamster-sidejack mitmproxy sqlmap wafw00f weevely
+httprint hydra dirb webshells \
+# Some tools to identify if it's really usefull to have them
+hamster-sidejack sqlmap weevely
 
 # Creating the ssh keys -- > a modif pas forcement besoin
 RUN ssh-keygen -A 

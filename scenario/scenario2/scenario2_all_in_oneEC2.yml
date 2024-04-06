@@ -43,7 +43,19 @@
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: move to docker-compose directory
-      shell: "cd /home/admin/project/services"
+      shell: "cd /home/admin/project/scenario/scenario2/services"
+      when: mode == "aws"
+
+    - name: "Construire l'image router-alpine"
+      shell: "docker build -t router-alpine /home/admin/project/scenario/scenario1/services/router-alpine"
+      when: mode == "aws"
+    
+    - name: "Construire l'image kali-web-simplify"
+      shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario2/services/kali"
+      when: mode == "aws"
+    
+    - name: "Construire l'image kali-web-simplify"
+      shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario2/services/kali"
       when: mode == "aws"
 
     - name: "Lance le docker compose pour installer les services"

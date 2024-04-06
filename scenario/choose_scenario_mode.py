@@ -134,12 +134,5 @@ def suppression_guacamole(conn):
     conn.commit()
 
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
     main()
