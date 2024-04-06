@@ -90,3 +90,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    #input("Appuyez sur Entrée pour quitter...")
