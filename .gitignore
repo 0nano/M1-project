@@ -2,3 +2,5 @@ aws/credentials
 aws/config_vars.yml
 aws/env/extravars
 aws/artifacts
+scenario/scenario2/services/__pycache__/inscription.cpython-311.pyc
+scenario/scenario1/services/__pycache__/inscription.cpython-311.pyc
