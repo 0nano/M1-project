@@ -43,14 +43,14 @@
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: move to docker-compose directory
-      shell: "cd /home/admin/project/scenario/services"
+      shell: "cd /home/admin/project/scenario/scenario1/services"
       when: mode == "aws"
 
     - name: "Lance le docker compose pour installer les services"
       shell: "docker-compose up -d"
       when: mode == "aws"
       args:
-        chdir: /home/admin/project/scenario/services 
+        chdir: /home/admin/project/scenario/scenario1/services 
 
     - name: "Add route for guacd"
       shell: "docker network connect private-net guacd && docker network connect internet-access guacd"
