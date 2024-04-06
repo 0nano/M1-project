@@ -78,7 +78,7 @@
         backup: yes
 
 
-- name: bzfjzf
+- name: create ec2 in aws for guacamole
   hosts: webserver
   remote_user: admin
   become: true
@@ -98,7 +98,7 @@
        clone: yes
        force: yes
        update: yes
-       version: Services
+       version: ma_branche_provisoire # A changer par le main quand github voudra bien me laisser merge
       
    - name: Create a folder for guacamole if it doesn't exist
      shell: mkdir -p guacamole && chmod 777 guacamole
