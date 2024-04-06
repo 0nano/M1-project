@@ -28,3 +28,5 @@ def suppression_guacamole(conn) :
     cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '3'")
     conn.commit()
 
+
+

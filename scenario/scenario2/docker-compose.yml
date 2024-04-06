@@ -1,0 +1,56 @@
+# Scenario 2
+
+services:
+  router:
+    image: router-alpine
+    hostname: router1
+    privileged: true
+    environment: 
+      NAT: "true" 
+    networks:
+      internet-access:
+        ipv4_address: 10.0.2.254 
+        priority: 1000
+      private-net:
+        ipv4_address: 10.1.2.254 
+        priority: 200
+
+  # apache:
+  #   image: httpd:2.4
+  #   hostname: apache
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     private-net:
+  #       ipv4_address: 10.1.2.5 
+
+  juice-shop:
+    image: bkimminich/juice-shop
+    ports:
+      - "3000:3000"
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.6 
+    
+  dvwa:
+    image: vulnerables/web-dvwa
+    ports:
+      - "80:80"
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.7
+
+
+networks:
+  internet-access:
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.2.0/24 
+  private-net:
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.2.0/24 
