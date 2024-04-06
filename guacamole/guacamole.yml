@@ -106,7 +106,7 @@
 
    - name: Copy docker-compose file
      copy:
-       src: project/services/guacamole/docker-compose.yml
+       src: project/guacamole/docker-compose.yml
        dest: guacamole/docker-compose.yml
        remote_src: yes
 

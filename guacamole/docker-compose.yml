@@ -1,0 +1,67 @@
+###############################################
+# Based on the work of boschkundendienst
+# https://github.com/boschkundendienst/guacamole-docker-compose
+###############################################
+version: '3.8'
+
+networks:
+  guacanetwork:
+    name: guacanetwork
+    driver: bridge
+
+services:
+
+  initdb-guacamole:
+    image: guacamole/guacamole
+    container_name: initdb-guacamole
+    networks:
+      - guacanetwork
+    volumes:
+      - ./init:/result:z
+    command: sh -c "/opt/guacamole/bin/initdb.sh --postgresql > /result/initdb.sql" # To have a file in the volume, you have to add rwx to the init folder in your machine
+    restart: 'no'
+
+  guacd:
+    image: guacamole/guacd
+    container_name: guacd
+    restart: always
+    networks:
+      - guacanetwork
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: guacamole_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: guacamole_db
+    networks:
+      - guacanetwork
+    depends_on:
+      - initdb-guacamole
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:z
+      - ./data:/var/lib/postgresql/data
+
+  guacamole:
+    image: guacamole/guacamole
+    container_name: guacamole
+    restart: always
+    environment:
+      GUACD_HOSTNAME: guacd
+      POSTGRES_HOSTNAME: postgres
+      POSTGRES_DATABASE: guacamole_db
+      POSTGRES_USER: guacamole_user
+      POSTGRES_PASSWORD: password
+    links:
+      - guacd
+    depends_on:
+      - guacd
+      - postgres
+    networks:
+      - guacanetwork
+    ports:
+      - 8080:8080
