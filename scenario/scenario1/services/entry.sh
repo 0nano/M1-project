@@ -7,5 +7,4 @@ else
 	echo "GW env parameter not set"
 	echo "Keeping defaults"
 fi
-/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf &
 exec $@
