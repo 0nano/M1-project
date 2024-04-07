@@ -58,7 +58,7 @@
       shell: "docker build -t juice-shop /home/admin/project/scenario/scenario2/services/juice-shop"
       when: mode == "aws"
     
-    - name: "Construire l'image juice-shop"
+    - name: "Construire l'image dvwa"
       shell: "docker build -t dvwa /home/admin/project/scenario/scenario2/services/dvwa"
       when: mode == "aws"
 
