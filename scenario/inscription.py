@@ -1,32 +1,36 @@
-def inscription_guacamole(conn) :
+import yaml
+
+def suppression_guacamole(conn, scenario) :
     cur = conn.cursor()
-    # insert for kali sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('1', 'KALI', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'hostname', '10.1.1.4')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'username', 'labuser')")
-    # insert for alpine sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('2', 'ALPINE', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'hostname', '10.1.1.2')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'username', 'labuser')")
-    # insert for ftp alpine sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('3', 'FTP', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'hostname', '10.1.1.3')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'username', 'labuser')")
+    cur.execute("SELECT connections_id FROM scenarios WHERE name = '" + scenario + "'")
+    connections_id = cur.fetchone()[0]
+    connections_id = connections_id[0]
+    for connection_id in connections_id:
+        cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '" + str(connection_id) + "'")
+        cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '" + str(connection_id) + "'")
+    cur.execute("DELETE FROM scenarios WHERE name = '" + scenario + "'")
     conn.commit()
 
 
-def suppression_guacamole(conn) :
-    cur = conn.cursor()
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '1'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '1'")
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '2'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '2'")
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '3'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '3'")
-    conn.commit()
-
-
-
+def inscription_guacamole(conn, scenario) :
+    with open("/home/isen/M1-project/scenario/" + scenario + "/services/docker-compose.yml") as stream:
+        try:
+            data = yaml.safe_load(stream)
+            connections_id = []
+            for service in data["services"]:
+                if service == "router":
+                    continue
+                cur = conn.cursor()
+                cur.execute("INSERT INTO guacamole_connection (connection_name, protocol) VALUES ('" + service + "', 'ssh')")
+                conn.commit()
+                cur.execute("SELECT connection_id FROM guacamole_connection WHERE connection_name = '" + service + "'")
+                connection_id = cur.fetchone()[0]
+                cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'hostname', '" + list(data["services"][service]["networks"].values())[0]["ipv4_address"] + "')")
+                cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'password', 'password')")
+                cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'username', 'labuser')")
+                conn.commit()
+                connections_id.append(connection_id)
+            cur.execute("INSERT INTO scenarios (name, connections_id) VALUES ('" + scenario + "', ARRAY[" + str(connections_id) + "])")
+            conn.commit()
+        except yaml.YAMLError as exc:
+            print(exc)
