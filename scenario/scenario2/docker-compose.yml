@@ -24,6 +24,13 @@ services:
   #     private-net:
   #       ipv4_address: 10.1.2.5 
 
+  Kali:
+    image: kali-web-simplify
+    hostname: kali
+    networks:
+      private-net:
+        ipv4_address: 10.1.1.4 # a modifi pour pas empiter sur le reseau du scenario1 
+
   juice-shop:
     image: bkimminich/juice-shop
     ports:
@@ -39,6 +46,14 @@ services:
     networks:
       private-net:
         ipv4_address: 10.1.2.7
+
+  own-web-server:
+    build: ./own-web-server
+    ports:
+      - "8080:80"
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.8
 
 
 networks:

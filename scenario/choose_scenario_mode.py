@@ -6,8 +6,8 @@ import psycopg2
 def main():
     print("Welcome to the deployment program!")
     print("Please choose the action:")
-    print("1. Deploy Scenario 1")
-    print("2. Deploy Scenario 2")
+    print("1. Deploy Scenario 1 : FTP scenario")
+    print("2. Deploy Scenario 2 : WEB server scenario")
     print("3. Remove Docker containers")
     print("4. Exit")
 

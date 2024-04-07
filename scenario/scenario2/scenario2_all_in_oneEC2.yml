@@ -46,25 +46,33 @@
       shell: "cd /home/admin/project/scenario/scenario2/services"
       when: mode == "aws"
 
-    - name: "Construire l'image router-alpine"
-      shell: "docker build -t router-alpine /home/admin/project/scenario/scenario1/services/router-alpine"
-      when: mode == "aws"
+    # - name: "Construire l'image router-alpine"
+    #   shell: "docker build -t router-alpine /home/admin/project/scenario/scenario1/services/router-alpine"
+    #   when: mode == "aws"
     
-    - name: "Construire l'image kali-web-simplify"
-      shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario2/services/kali"
-      when: mode == "aws"
+    # - name: "Construire l'image kali-web-simplify"
+    #   shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario2/services/kali"
+    #   when: mode == "aws"
     
-    - name: "Construire l'image kali-web-simplify"
-      shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario2/services/kali"
-      when: mode == "aws"
+    # - name: "Construire l'image juice-shop"
+    #   shell: "docker build -t juice-shop /home/admin/project/scenario/scenario2/services/juice-shop"
+    #   when: mode == "aws"
+    
+    # - name: "Construire l'image juice-shop"
+    #   shell: "docker build -t dvwa /home/admin/project/scenario/scenario2/services/dvwa"
+    #   when: mode == "aws"
+
+    # - name: "Construire l'image juice-shop"
+    #   shell: "docker build -t own-web-server /home/admin/project/scenario/scenario2/services/own-web-server"
+    #   when: mode == "aws"
 
     - name: "Lance le docker compose pour installer les services"
       shell: "docker-compose up -d"
       when: mode == "aws"
       args:
-        chdir: /home/admin/project/services 
+        chdir: /home/admin/project/scenario/scenario2/services
 
-    - name: "Add route for guacd"
-      shell: "docker network connect private-net guacd && docker network connect internet-access guacd"
+    - name: "Add route for guacd"  # Weird but the network created in docker-compose has a service name as prefix
+      shell: "docker network connect services_private-net guacd && docker network connect services_internet-access guacd"
       when: mode == "aws"
 
