@@ -1,13 +1,13 @@
 import os  # Importez le module os pour utiliser les variables d'environnement
 import subprocess
-#import inscription
+import inscription
 import psycopg2
 
 def main():
     print("Welcome to the deployment program!")
     print("Please choose the action:")
-    print("1. Deploy Scenario 1 : FTP scenario")
-    print("2. Deploy Scenario 2 : WEB server scenario")
+    print("1. Deploy Scenario 1")
+    print("2. Deploy Scenario 2")
     print("3. Remove Docker containers")
     print("4. Exit")
 
@@ -41,10 +41,15 @@ def deploy(playbook_name):
 
     print(f"Deployment in {mode} mode in progress...")
 
-    with open('../guacamole/ec2_adress.txt', 'r') as file:
-        IP_EC2 = file.read().strip()
+    if mode == "aws":
+        with open('../guacamole/ec2_adress.txt', 'r') as file:
+            IP_EC2 = file.read().strip()
+    else:
+        IP_EC2 = "none"
 
-    subprocess.run(["ansible-playbook", f"{playbook_name}.yml", "-e", f"mode={mode}", "-e", f"IP_EC2={IP_EC2}", "--ask-vault-pass"])
+    subprocess.run(["ansible-playbook", f"{playbook_name}.yml", "-e", f"mode={mode}", "-e", f"IP_EC2={IP_EC2}"])
+
+    scenario = playbook_name.split("/")[0]
 
     if mode == "local":
         print("Test de connexion à la base de données réussi.")
@@ -55,9 +60,9 @@ def deploy(playbook_name):
             password="password",
             port="5432")
         cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS scenarios (id INTEGER PRIMARY KEY, name VARCHAR(25))")
+        cur.execute("CREATE TABLE IF NOT EXISTS scenarios (name VARCHAR(25) PRIMARY KEY, connections_id INTEGER[])")
         conn.commit()
-        inscription.inscription_guacamole(conn)
+        inscription.inscription_guacamole(conn, scenario)
     elif mode == "aws": 
         print("Test de connexion à la base de données réussi.")
         conn = psycopg2.connect(
@@ -67,9 +72,10 @@ def deploy(playbook_name):
             password="password",
             port="5432")
         cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS scenarios (id INTEGER PRIMARY KEY, name VARCHAR(25))")
+        cur.execute("CREATE TABLE IF NOT EXISTS scenarios (name VARCHAR(25) PRIMARY KEY, connections_id INTEGER[])")
         conn.commit()
-        inscription.inscription_guacamole(conn)
+        inscription.inscription_guacamole(conn, scenario)
+
 
 def remove_docker_containers():
     print("Removing Docker containers...")
@@ -132,6 +138,13 @@ def suppression_guacamole(conn):
     cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '3'")
     cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '3'")
     conn.commit()
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
