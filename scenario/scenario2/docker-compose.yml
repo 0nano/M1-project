@@ -34,7 +34,7 @@ services:
   juice-shop:
     image: bkimminich/juice-shop
     ports:
-      - "3000:3000"
+      - "3000:3000" # attention need ajout security group port 3000 popur y acceder depuis http (maybe aps besoin pour guaca a tester)
     networks:
       private-net:
         ipv4_address: 10.1.2.6 

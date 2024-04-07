@@ -3,30 +3,31 @@ FROM kalilinux/kali-last-release
 # Updating and upgrading the system
 RUN apt update && apt upgrade -y
 
-# Installing the necessary tools based on the kali-tools-web --> add less packages / iputils-ping/iputils-arping / iproute2 net-tools iptables man / lynx
+# Installing the necessary tools based on the kali-tools-web
 RUN apt install -y ncrack nikto nmap ftester openssh-server openssh-client sudo \
 httprint hydra dirb webshells tcpdump \
-# Some tools to identify if it's really usefull to have them --> SCENARIO1 NOT USEFULL
-# hamster-sidejack mitmproxy sqlmap wafw00f weevely
+less iproute2 iptables net-tools man-db iputils-ping iputils-arping lynx \
+# Some tools to identify if it's really usefull to have them
+hamster-sidejack mitmproxy sqlmap wafw00f weevely
 
-# Creating the ssh keys -- > a modif pas forcement besoin
-RUN ssh-keygen -A 
-
-# Creating an user to be used in the lab --> 
+# Creating an user to be used in the lab
 RUN addgroup labuser && adduser labuser --ingroup labuser
+
+# Verifying if the user home was created
+RUN mkdir -p /home/labuser
 
 # Setting the password for the labuser
 RUN echo "labuser:password" | chpasswd
 
-# Adding the labuser to the sudo group  --> fixer le shell bin/bash pour la colorisation 
-RUN adduser labuser sudo
+# Adding the labuser to the sudo group
+RUN sed -i "s/\(^sudo\:.*\)/\1labuser/" /etc/group && sed -i "s/^\#[[:space:]]\(\%sudo.*\)/\1/" /etc/sudoers
 
-# Create the directory for the sshd --> mkdir -p pour créer arbo 
-RUN mkdir /run/sshd
+# Create the directory for the sshd
+RUN mkdir -p /run/sshd
 
 # Adding the entrypoint script to set the network configuration
-# COPY ../entry.sh /
-# ENTRYPOINT ["/entry.sh"]
+COPY ../entry.sh /entry.sh
+ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh and ftp servers
 CMD ["/usr/sbin/sshd","-D"] 
