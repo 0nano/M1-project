@@ -35,8 +35,8 @@ RUN echo "max_clients=10" >> /etc/vsftpd/vsftpd.conf
 RUN echo "max_per_ip=5" >> /etc/vsftpd/vsftpd.conf
 
 # Adding the entrypoint script to set the network configuration
-# COPY ../entry.sh
-# ENTRYPOINT ["/entry.sh"]
+COPY entry.sh /entry.sh
+ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh and ftp servers
 CMD ["/usr/sbin/sshd","-D"] 
