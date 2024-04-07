@@ -1,7 +1,5 @@
 ---
 - hosts: localhost
-  vars_files:
-    - config_vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3 
     region: us-east-1
@@ -13,6 +11,8 @@
     m1project_repo: "https://github.com/0nano/M1-project.git"
     default_container_name: guacamole_docker
     default_container_image: guacamole/guacd
+  vars_files:
+    - config_vars.yml
   environment:
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
@@ -21,6 +21,7 @@
         name: "{{ sec_group }}"
         description: "Allow SSH and HTTP"
         region: "{{ region }}"
+
         rules: 
           - proto: tcp
             ports:
@@ -32,7 +33,7 @@
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
-        name: "Wosaaaaaaaa"    
+        name: "Guacamoleuu"    
         region: "{{ region }}"
         instance_type: "{{ instance_type }}"
         security_group: "{{ sec_group }}"
@@ -50,6 +51,7 @@
 
       - name: Get instances facts
         ec2_instance_info:
+
           region: "{{ region }}"
         register: result
 
@@ -69,7 +71,14 @@
         host: "{{ ec2.instances.0.public_ip_address }}"
         port: 22  
 
-- name: bzfjzf
+    - name: Save IP to file
+      ansible.builtin.copy:
+        content: "{{ ec2.instances.0.public_ip_address }}"
+        dest: ec2_adress.txt
+        backup: yes
+
+
+- name: create ec2 in aws for guacamole
   hosts: webserver
   remote_user: admin
   become: true
@@ -79,46 +88,9 @@
     ansible_ssh_private_key_file: "{{ ssh_key }}"
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
-   - name: Check If Docker Is Installed
-     command: docker --version
-     register: docker_valid
-     ignore_errors: yes
-     
-   - name: Install Docker and Docker-Compose
-     block:
-       - name: Install dependencies for docker and docker-compose
-         become: yes
-         apt:
-           update_cache: yes
-           name: "{{ item }}"
-           state: present
-         with_items:
-           - apt-transport-https
-           - ca-certificates
-           - curl
-           - lsb-release
-           - gnupg2
-           - python3-pip
-          
-       - name: Add Docker GPG key
-         shell: 'curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
-
-       - name: Add the repository to fetch the docker package
-         shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | tee /etc/apt/sources.list.d/docker.list'
-
-       - name: Update source list and then install docker
-         apt: update_cache=yes name=docker-ce state=latest 
-
-       - name: Install the Docker module for Python, required by ansible
-         apt:
-           name: python3-docker
-           state: present
-
-       - name: Install docker-compose
-         apt:
-           name: docker-compose
-           state: present
-
+   - name: "Installe et deploy docker"
+     include_tasks: ../environment/install_docker.yml 
+   
    - name: Install guacamole on docker
      git:
        repo: "https://github.com/0nano/M1-project.git"
@@ -126,14 +98,15 @@
        clone: yes
        force: yes
        update: yes
-       version: Guacamole-bastion
+       version: ma_branche_provisoire # A changer par le main quand github voudra bien me laisser merge
       
-   - name: Create a folder for guacamole
-     shell: mkdir guacamole && chmod 777 guacamole
+   - name: Create a folder for guacamole if it doesn't exist
+     shell: mkdir -p guacamole && chmod 777 guacamole
+     ignore_errors: true # au cas ou fichier déjà créer
 
    - name: Copy docker-compose file
      copy:
-       src: project/aws/docker-compose.yml
+       src: project/guacamole/docker-compose.yml
        dest: guacamole/docker-compose.yml
        remote_src: yes
 
@@ -142,9 +115,8 @@
 
    - name: Start guacamole docker
      shell: cd guacamole/ && docker-compose up -d
-      # become: yes
-      # become_user: admin
-      # tags: ['never', 'start_guacamole_docker']
+
+
     
     
 

@@ -1,0 +1,4 @@
+---
+# Variables
+ssh_key: /home/isen/test.pem
+aws_creds: /home/isen/credentials

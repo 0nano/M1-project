@@ -1,0 +1,20 @@
+- name: Pull alpine basic image
+  become: yes
+  shell: 'sudo docker pull alpine'
+
+- name: Run Docker container alpine
+  become: yes
+  shell: 'sudo docker run -d --name alpinecontainer alpine sh -c "tail -f /dev/null"'
+
+- name: Install FTP client on Alpine container
+  vars:
+    container_name: "alpinecontainer"
+  become: yes
+  shell: |
+    sudo docker exec {{ container_name }} apk update
+    sudo docker exec {{ container_name }} apk add lftp
+
+
+
+
+

@@ -1,0 +1,77 @@
+# scenario1.yml
+
+# Déploiement en mode local
+- hosts: localhost
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: vockey # Change for your key pair
+    sec_group: "test-security-group"
+    image_id: ami-058bd2d568351da34 # Debian 12 OS  
+  vars_files:
+    - config_vars.yml
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:       
+    - name: "Lance le docker compose pour installer les services"
+      command: "docker-compose up -d"
+      when: mode == "local"
+    - name: "Add route for guacd"
+      command: "docker network connect private-net guacd && docker network connect internet-access guacd"
+      when: mode == "local"
+
+    - name: "Add hosts IP to inventory"
+      add_host:
+        name: "{{ IP_EC2 }}"
+        groups: ec2_instances
+      when: mode == "aws"
+
+
+- name: "Deploiement de l'instance et de ses services via AWS"
+  hosts: ec2_instances
+  remote_user: admin
+  become: true
+  vars_files:
+    - config_vars.yml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    ansible_ssh_private_key_file: "{{ ssh_key }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:
+    - name: move to docker-compose directory
+      shell: "cd /home/admin/project/scenario/scenario1/services"
+      when: mode == "aws"
+
+    - name: "Construire l'image router-alpine"
+      shell: "docker build -t router-alpine /home/admin/project/scenario/scenario1/services/router-alpine"
+      when: mode == "aws"
+
+    - name: "Construire l'image ftp-alpine"
+      shell: "docker build -t ftp-alpine /home/admin/project/scenario/scenario1/services/ftp-alpine"
+      when: mode == "aws"
+
+
+    - name: "Construire l'image alpine-ssh"
+      shell: "docker build -t alpine-sshd /home/admin/project/scenario/scenario1/services/alpine-sshd"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services/alpine-sshd
+
+    - name: "Construire l'image kali-web-simplify"
+      shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario1/services/kali"
+      when: mode == "aws"
+
+    - name: "Lance le docker compose pour installer les services"
+      shell: "docker-compose up -d"
+      when: mode == "aws"
+      args:
+        chdir: /home/admin/project/scenario/scenario1/services 
+
+    - name: "Add route for guacd"  # Weird but the network created in docker-compose has a service name as prefix
+      shell: "docker network connect services_private-net guacd && docker network connect services_internet-access guacd"
+      when: mode == "aws"
+
