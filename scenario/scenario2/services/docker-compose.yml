@@ -25,7 +25,7 @@ services:
   #       ipv4_address: 10.1.2.5 
 
   Kali:
-    image: kali-web-simplify
+    image: ghcr.io/0nano/kali-web-simplify:latest
     hostname: kali
     networks:
       private-net:
