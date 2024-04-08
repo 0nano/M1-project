@@ -18,3 +18,7 @@ RUN sed -i 's#AllowOverride none#AllowOverride All#' /etc/apache2/httpd.conf && 
 
 # Démarrer les services Apache et MySQL au démarrage du conteneur
 CMD httpd -D FOREGROUND && /etc/init.d/mysql start && tail -f /dev/null
+
+# Adding the entrypoint script to set the network configuration
+COPY ../entry.sh /entry.sh
+ENTRYPOINT ["/entry.sh"]
