@@ -72,6 +72,6 @@
         chdir: /home/admin/project/scenario/scenario1/services 
 
     - name: "Add route for guacd"  # Weird but the network created in docker-compose has a service name as prefix
-      shell: "docker network connect services_private-net guacd && docker network connect services_internet-access guacd"
+      shell: "docker network connect private-net guacd && docker network connect internet-access guacd"
       when: mode == "aws"
 
