@@ -29,6 +29,9 @@
               - 80
               - 8080
               - 5432 #inscription.py
+              - 3500 # own web server provisoire juste pour test
+              - 4500 # dvwa provisoire
+              - 3000 # juice shop provisoire
             cidr_ip: 0.0.0.0/0
             rule_desc: allow ssh and http
 

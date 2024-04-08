@@ -6,7 +6,7 @@ services:
     hostname: router1
     privileged: true
     environment: 
-      NAT: true 
+      NAT: "true" # deso Maxence mais moi ça veut pas sans les guillemets 
     networks:
       internet-access:
         ipv4_address: 10.0.1.254
