@@ -13,7 +13,9 @@ def suppression_guacamole(conn, scenario) :
 
 
 def inscription_guacamole(conn, scenario) :
-    with open("/home/isen/M1-project/scenario/" + scenario + "/services/docker-compose.yml") as stream:
+    file_path = "scenario/" + scenario + "/services/docker-compose.yml"
+
+    with open(file_path) as stream:
         try:
             data = yaml.safe_load(stream)
             connections_id = []
