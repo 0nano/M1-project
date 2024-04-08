@@ -20,5 +20,5 @@ RUN sed -i 's#AllowOverride none#AllowOverride All#' /etc/apache2/httpd.conf && 
 CMD httpd -D FOREGROUND && /etc/init.d/mysql start && tail -f /dev/null
 
 # Adding the entrypoint script to set the network configuration
-COPY ../entry.sh /entry.sh
+COPY entry.sh /entry.sh
 ENTRYPOINT ["/entry.sh"]

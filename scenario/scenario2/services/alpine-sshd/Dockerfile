@@ -22,7 +22,7 @@ RUN echo "labuser:password" | chpasswd
 RUN sed -i "s/\(^sudo\:.*\)/\1labuser/" /etc/group && sed -i "s/^\#[[:space:]]\(\%sudo.*\)/\1/" /etc/sudoers
 
 # Adding the entrypoint script to set the network configuration
-COPY ../entry.sh /entry.sh
+COPY entry.sh /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh server
