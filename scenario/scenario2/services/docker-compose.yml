@@ -47,13 +47,13 @@ services:
   #     private-net:
   #       ipv4_address: 10.1.2.7
 
-  own-web-server:
-    image: own-web-server
-    ports:
-      - "3500:3500"
-    networks:
-      private-net:
-        ipv4_address: 10.1.2.8
+  # own-web-server:
+  #   image: own-web-server
+  #   ports:
+  #     - "3500:3500"
+  #   networks:
+  #     private-net:
+  #       ipv4_address: 10.1.2.8
 
 
 networks:
