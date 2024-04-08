@@ -50,5 +50,8 @@
     option: storage-opts
     value: "overlay2.size=10GB"  # by default 8Go
     state: present
-  notify:
-    - Restart Docker service
+  
+- name: Restart Docker service
+  service:
+    name: docker
+    state: restarted
