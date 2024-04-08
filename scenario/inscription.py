@@ -13,7 +13,7 @@ def suppression_guacamole(conn, scenario) :
 
 
 def inscription_guacamole(conn, scenario) :
-    file_path = "scenario/" + scenario + "/services/docker-compose.yml"
+    file_path = scenario + "/services/docker-compose.yml"
 
     with open(file_path) as stream:
         try:
