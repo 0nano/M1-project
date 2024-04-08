@@ -42,3 +42,13 @@
   apt:
     name: docker-compose
     state: present
+
+- name: Configure Docker storage options # needed bc scenaro2 is too heavy
+  ini_file:
+    path: /etc/docker/daemon.json
+    section: ""
+    option: storage-opts
+    value: "overlay2.size=10GB"  # by default 8Go
+    state: present
+  notify:
+    - Restart Docker service
