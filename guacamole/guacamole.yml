@@ -28,6 +28,7 @@
               - 22
               - 80
               - 8080
+              - 5432 #inscription.py
             cidr_ip: 0.0.0.0/0
             rule_desc: allow ssh and http
 
