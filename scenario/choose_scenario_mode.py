@@ -47,7 +47,7 @@ def deploy(playbook_name):
     else:
         IP_EC2 = "none"
 
-    subprocess.run(["ansible-playbook", f"{playbook_name}.yml", "-e", f"mode={mode}", "-e", f"IP_EC2={IP_EC2}"])
+    subprocess.run(["ansible-playbook", f"{playbook_name}.yml", "-e", f"mode={mode}", "-e", f"IP_EC2={IP_EC2}", "-e", "supp=false", "--ask-become-pass"])
 
     scenario = playbook_name.split("/")[0]
 
@@ -105,46 +105,7 @@ def remove_docker_containers():
 
     print(f"Cleaning in {mode} mode in progress...")
 
-    subprocess.run(["ansible-playbook", "clean_docker.yml", "-e", f"mode={mode}", "-e", f"second_mode={second_mode}", "--ask-vault-pass"])
-
-
-# Fonction d'inscription à Guacamole
-def inscription_guacamole(conn):
-    cur = conn.cursor()
-    # Insertions pour Kali sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('1', 'KALI', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'hostname', '10.1.1.4')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('1', 'username', 'labuser')")
-    # Insertions pour Alpine sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('2', 'ALPINE', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'hostname', '10.1.1.2')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('2', 'username', 'labuser')")
-    # Insertions pour FTP Alpine sshd
-    cur.execute("INSERT INTO guacamole_connection (connection_id, connection_name, protocol) VALUES ('3', 'FTP', 'ssh')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'hostname', '10.1.1.3')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'password', 'password')")
-    cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('3', 'username', 'labuser')")
-    conn.commit()
-
-# Fonction de suppression dans Guacamole
-def suppression_guacamole(conn):
-    cur = conn.cursor()
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '1'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '1'")
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '2'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '2'")
-    cur.execute("DELETE FROM guacamole_connection_parameter WHERE connection_id = '3'")
-    cur.execute("DELETE FROM guacamole_connection WHERE connection_id = '3'")
-    conn.commit()
-
-
-
-
-
-
-
+    subprocess.run(["ansible-playbook", "clean_docker.yml", "-e", f"mode={mode}", "-e", f"second_mode={second_mode}", "--ask-become-pass"])
 
 
 if __name__ == "__main__":
