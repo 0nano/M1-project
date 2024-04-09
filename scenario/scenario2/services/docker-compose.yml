@@ -2,7 +2,7 @@
 
 services:
   router:
-    image: router-alpine
+    image: ghcr.io/0nano/router-alpine:latest
     hostname: router1
     privileged: true
     environment: 
