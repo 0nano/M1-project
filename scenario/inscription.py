@@ -13,21 +13,19 @@ def suppression_guacamole(conn, scenario) :
 
 
 def inscription_guacamole(conn, scenario) :
-    file_path = scenario + "/services/docker-compose.yml"
-
-    with open(file_path) as stream:
+    with open("/home/isen/M1-project/scenario/" + scenario + "/docker-compose.yml") as stream:
         try:
             data = yaml.safe_load(stream)
             connections_id = []
             for service in data["services"]:
-                if service == "router":
+                if "x-inscription" not in data["services"][service] or data["services"][service]["x-inscription"] == "none":
                     continue
                 cur = conn.cursor()
-                cur.execute("INSERT INTO guacamole_connection (connection_name, protocol) VALUES ('" + service + "', 'ssh')")
+                cur.execute("INSERT INTO guacamole_connection (connection_name, protocol) VALUES ('" + service + "_" + scenario + "', 'ssh')")
                 conn.commit()
-                cur.execute("SELECT connection_id FROM guacamole_connection WHERE connection_name = '" + service + "'")
+                cur.execute("SELECT connection_id FROM guacamole_connection WHERE connection_name = '" + service + "_" + scenario + "'")
                 connection_id = cur.fetchone()[0]
-                cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'hostname', '" + list(data["services"][service]["networks"].values())[0]["ipv4_address"] + "')")
+                cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'hostname', '" + data["services"][service]["x-inscription"] + "')")
                 cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'password', 'password')")
                 cur.execute("INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value) VALUES ('" + str(connection_id) + "', 'username', 'labuser')")
                 conn.commit()

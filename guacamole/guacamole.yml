@@ -34,6 +34,7 @@
               - 3000 # juice shop provisoire
             cidr_ip: 0.0.0.0/0
             rule_desc: allow ssh and http
+      when: mode == "aws" and supp == "false"
 
     - name: Start an instance and add EBS
       amazon.aws.ec2_instance:
@@ -46,6 +47,7 @@
         termination_protection: true # because if not the EC2 instance will be terminated after playbook run
         state: running
       register: ec2
+      when: mode == "aws" and supp == "false"
       #   tags:
       #     Environment: Bastion testing
       # tags: ['never', 'create_ec2_instance']
@@ -58,29 +60,84 @@
 
           region: "{{ region }}"
         register: result
+        when: mode == "aws" and supp == "false"
 
       - name: Instances ID
         debug:
           msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
         loop: "{{ result.instances }}"
+        when: mode == "aws" and supp == "false"
       tags: always
+      when: mode == "aws" and supp == "false"
 
     - name: "Add new Instance to Host group"
       add_host:
         hostname: "{{ ec2.instances.0.public_ip_address }}"
         groupname: webserver
+      when: mode == "aws" and supp == "false"
 
     - name: "Wait for SSH in Instance"
       wait_for:
         host: "{{ ec2.instances.0.public_ip_address }}"
         port: 22  
+      when: mode == "aws" and supp == "false"
 
     - name: Save IP to file
       ansible.builtin.copy:
         content: "{{ ec2.instances.0.public_ip_address }}"
         dest: ec2_adress.txt
         backup: yes
+      when: mode == "aws" and supp == "false"
 
+    - name: Get the instance id by name
+      amazon.aws.ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:Name": "Guacamoleuu"
+      register: guacamole_instance
+      when: mode == "aws" and supp == "true"
+    
+    - name: Disable termination protection
+      amazon.aws.ec2_instance:
+        instance_ids: "{{ guacamole_instance.instances[0].instance_id }}"
+        state: restarted
+        region: "{{ region }}"
+        termination_protection: no
+      when: mode == "aws" and supp == "true"
+
+    - name: Terminate the instance
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        instance_ids: "{{ guacamole_instance.instances[0].instance_id }}"
+        state: absent
+      when: mode == "aws" and supp == "true"
+
+    - name: Delete the ec2 ip file
+      file:
+        path: ec2_adress.txt
+        state: absent
+      when: mode == "aws" and supp == "true"
+
+    - name: Prepare the init folder
+      shell: "chmod 777 -R init/ && umask 0022 init/"
+      when: mode == "local" and supp == "false"
+
+    - name: Start Guacamole
+      shell: "docker compose up -d"
+      when: mode == "local" and supp == "false"
+    
+    - name: Stop Guacamole
+      shell: "docker compose down"
+      when: mode == "local" and supp == "true"
+
+    - name: Remove data and init folder
+      shell: "rm -rf init/ data/"
+      become: true
+      when: mode == "local" and supp == "true"
+    
+    - name: Recreate data and init folder
+      shell: "mkdir init/ data/"
+      when: mode == "local" and supp == "true"
 
 - name: create ec2 in aws for guacamole
   hosts: webserver
@@ -119,7 +176,6 @@
 
    - name: Start guacamole docker
      shell: cd guacamole/ && docker-compose up -d
-
 
     
     

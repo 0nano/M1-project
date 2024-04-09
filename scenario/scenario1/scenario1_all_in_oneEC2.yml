@@ -16,17 +16,27 @@
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:       
     - name: "Lance le docker compose pour installer les services"
-      command: "docker-compose up -d"
-      when: mode == "local"
+      shell: "docker-compose up -d"
+      when: mode == "local" and supp == "false"
+
     - name: "Add route for guacd"
-      command: "docker network connect private-net guacd && docker network connect internet-access guacd"
-      when: mode == "local"
+      shell: "docker network connect private-net-scenario1 guacd && docker network connect internet-access-scenario1 guacd"
+      when: mode == "local" and supp == "false"
 
     - name: "Add hosts IP to inventory"
       add_host:
         name: "{{ IP_EC2 }}"
         groups: ec2_instances
-      when: mode == "aws"
+      when: mode == "aws" and supp == "false"
+
+     # Suppression des dockers
+    - name: "Suppression des routes pour guacd"
+      shell: "docker network disconnect private-net-scenario1 guacd && docker network disconnect internet-access-scenario1 guacd"
+      when: mode == "local" and supp == "true"
+
+    - name: "Suppression des dockers"
+      shell: "docker-compose down"
+      when: mode == "local" and supp == "true"
 
 
 - name: "Deploiement de l'instance et de ses services via AWS"
@@ -43,35 +53,43 @@
     AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
   tasks:
     - name: move to docker-compose directory
-      shell: "cd /home/admin/project/scenario/scenario1/services"
-      when: mode == "aws"
+      shell: "cd /home/admin/project/scenario/scenario1"
+      when: mode == "aws" and supp == "false"
 
     - name: "Construire l'image router-alpine"
       shell: "docker build -t router-alpine /home/admin/project/scenario/scenario1/services/router-alpine"
-      when: mode == "aws"
+      when: mode == "aws" and supp == "false"
 
     - name: "Construire l'image ftp-alpine"
       shell: "docker build -t ftp-alpine /home/admin/project/scenario/scenario1/services/ftp-alpine"
-      when: mode == "aws"
+      when: mode == "aws" and supp == "false"
 
 
     - name: "Construire l'image alpine-ssh"
       shell: "docker build -t alpine-sshd /home/admin/project/scenario/scenario1/services/alpine-sshd"
-      when: mode == "aws"
+      when: mode == "aws" and supp == "false"
       args:
         chdir: /home/admin/project/scenario/scenario1/services/alpine-sshd
 
     - name: "Construire l'image kali-web-simplify"
       shell: "docker build -t kali-web-simplify /home/admin/project/scenario/scenario1/services/kali"
-      when: mode == "aws"
+      when: mode == "aws" and supp == "false"
 
     - name: "Lance le docker compose pour installer les services"
-      shell: "docker-compose up -d"
-      when: mode == "aws"
-      args:
-        chdir: /home/admin/project/scenario/scenario1/services 
+      shell: "cd /home/admin/project/scenario/scenario1 && docker compose up -d"
+      when: mode == "aws" and supp == "false"
 
     - name: "Add route for guacd"  # Weird but the network created in docker-compose has a service name as prefix
-      shell: "docker network connect private-net guacd && docker network connect internet-access guacd"
-      when: mode == "aws"
+      shell: "docker network connect private-net-scenario1 guacd && docker network connect internet-access-scenario1 guacd"
+      when: mode == "aws" and supp == "false"
+
+    - name: "Suppression des routes pour guacd"
+      shell: "docker network disconnect private-net-scenario1 guacd && docker network disconnect internet-access-scenario1 guacd"
+      when: mode == "aws" and supp == "true"
+
+    - name: "Suppression des dockers"
+      shell: "docker compose down"
+      when: mode == "aws" and supp == "true"
+      args:
+        chdir: /home/admin/project/scenario/scenario1
 

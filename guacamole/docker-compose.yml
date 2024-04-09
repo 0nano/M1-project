@@ -2,7 +2,6 @@
 # Based on the work of boschkundendienst
 # https://github.com/boschkundendienst/guacamole-docker-compose
 ###############################################
-version: '3.8'
 
 networks:
   guacanetwork:
