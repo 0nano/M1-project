@@ -32,7 +32,7 @@ services:
         ipv4_address: 10.1.2.5 # a modifi pour pas empiter sur le reseau du scenario1 
 
   juice-shop:
-    image: docker pull ghcr.io/guillaumerobin9/juice-shop:latest
+    image: ghcr.io/guillaumerobin9/juice-shop:latest
     ports:
       - "3000:3000" # attention need ajout security group port 3000 popur y acceder depuis http (maybe aps besoin pour guaca a tester)
     networks:
@@ -40,7 +40,7 @@ services:
         ipv4_address: 10.1.2.6 
     
   dvwa:
-    image: docker pull ghcr.io/guillaumerobin9/dvwa:latest
+    image: ghcr.io/guillaumerobin9/dvwa:latest
     ports:
       - "4500:4500"
     networks:
@@ -48,7 +48,7 @@ services:
         ipv4_address: 10.1.2.7
 
   own-web-server:
-    image: docker pull ghcr.io/guillaumerobin9/own-web-server:latest
+    image: ghcr.io/guillaumerobin9/own-web-server:latest
     ports:
       - "3500:3500"
     networks:
