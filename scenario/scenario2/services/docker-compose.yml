@@ -39,13 +39,13 @@ services:
       private-net:
         ipv4_address: 10.1.2.6 
     
-  # dvwa:
-  #   image: vulnerables/web-dvwa
-  #   ports:
-  #     - "4500:4500"
-  #   networks:
-  #     private-net:
-  #       ipv4_address: 10.1.2.7
+  dvwa:
+    image: vulnerables/web-dvwa
+    ports:
+      - "4500:4500"
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.7
 
   # own-web-server:
   #   image: own-web-server
