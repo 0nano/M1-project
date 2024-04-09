@@ -26,7 +26,7 @@ RUN sed -i "s/\(^sudo\:.*\)/\1labuser/" /etc/group && sed -i "s/^\#[[:space:]]\(
 RUN mkdir -p /run/sshd
 
 # Adding the entrypoint script to set the network configuration
-COPY ../entry.sh /entry.sh
+COPY entry.sh /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh and ftp servers
