@@ -28,22 +28,23 @@ services:
   Kali:
     image: ghcr.io/0nano/kali-web-simplify:latest
     hostname: kali
+    x-inscription: 10.1.2.5
     networks:
       private-net:
         ipv4_address: 10.1.2.5 # a modifi pour pas empiter sur le reseau du scenario1 
 
   juice-shop:
     image: ghcr.io/guillaumerobin9/juice-shop:latest
-    ports:
-      - "3000:3000" # attention need ajout security group port 3000 popur y acceder depuis http (maybe aps besoin pour guaca a tester)
+    hostname: juice-shop
+    x-inscription: 10.1.2.6 
     networks:
       private-net:
         ipv4_address: 10.1.2.6 
     
   dvwa:
     image: ghcr.io/guillaumerobin9/dvwa:latest
-    ports:
-      - "4500:4500"
+    hostname: dvwa
+    x-inscription: 10.1.2.7
     networks:
       private-net:
         ipv4_address: 10.1.2.7
