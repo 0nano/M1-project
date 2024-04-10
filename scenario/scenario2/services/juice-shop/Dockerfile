@@ -75,8 +75,7 @@ RUN apt-get update && \
 # Supprimer le répertoire /var/www/html s'il existe déjà
 RUN rm -rf /var/www/html
 
-RUN 
-git clone https://github.com/juice-shop/juice-shop.git --depth 1
+RUN git clone --depth 1 -c http.sslVerify=false https://github.com/juice-shop/juice-shop.git
 
 RUN  cd juice-shop
 
