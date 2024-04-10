@@ -34,25 +34,27 @@ services:
         ipv4_address: 10.1.2.5 # a modifi pour pas empiter sur le reseau du scenario1 
 
   juice-shop:
-    image: ghcr.io/guillaumerobin9/juice-shop:latest
-    hostname: juice-shop
+    image: ghcr.io/guillaumerobin9/dvwa:latest 
+    hostname: dvwa
     x-inscription: 10.1.2.6 
     networks:
       private-net:
         ipv4_address: 10.1.2.6 
     
   dvwa:
-    image: ghcr.io/guillaumerobin9/dvwa:latest
-    hostname: dvwa
+    image: ghcr.io/guillaumerobin9/own-web-server:latest
+     # ports:
+    #   - "3500:3500"
+    hostname: own-web-server
     x-inscription: 10.1.2.7
     networks:
       private-net:
         ipv4_address: 10.1.2.7
 
   own-web-server:
-    image: ghcr.io/guillaumerobin9/own-web-server:latest
-    ports:
-      - "3500:3500"
+    image: ghcr.io/guillaumerobin9/juice-shop:latest
+    hostname: juice-shop
+    x-inscription: 10.1.2.8
     networks:
       private-net:
         ipv4_address: 10.1.2.8
