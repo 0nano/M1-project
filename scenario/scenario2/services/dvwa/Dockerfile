@@ -42,6 +42,10 @@ RUN useradd -m labuser && \
     echo 'labuser:password' | chpasswd && \
     usermod -aG sudo labuser
 
+
+# Exposer le port 80 pour que guaca le trouve
+EXPOSE 5000
+
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
 ENTRYPOINT ["/entry.sh"]
