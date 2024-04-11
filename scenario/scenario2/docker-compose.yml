@@ -43,8 +43,6 @@ services:
     
   dvwa:
     image: ghcr.io/guillaumerobin9/own-web-server:latest
-     # ports:
-    #   - "3500:3500"
     hostname: own-web-server
     x-inscription: 10.1.2.7
     networks:
@@ -59,6 +57,13 @@ services:
       private-net:
         ipv4_address: 10.1.2.8
 
+  mysql:
+    image: ghcr.io/guillaumerobin9/mysql:latest
+    hostname: mysql
+    x-inscription: 10.1.2.9
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.9
 
 networks:
   internet-access:
