@@ -34,6 +34,8 @@ CMD /etc/init.d/apache2 start && /etc/init.d/mysql start && tail -f /dev/null
 # voir alpine ssh 
 # Pour rendre l'apahce indépendant du docker 
 
+EXPOSE 80
+
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
 
