@@ -45,7 +45,7 @@ EXPOSE 5000
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
-ENTRYPOINT ["entry.sh"]
+ENTRYPOINT ["/entry.sh"]
 
 # Démarrer Apache et SSH au lancement du conteneur
 CMD ["bash", "-c", "service apache2 start && /usr/sbin/sshd -D"]
