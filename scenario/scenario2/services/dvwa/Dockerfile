@@ -28,10 +28,7 @@ RUN cp /var/www/html/config/config.inc.php.dist /var/www/html/config/config.inc.
 
 # Configurer Apache pour servir DVWA
 RUN sed -i 's#AllowOverride None#AllowOverride All#' /etc/apache2/apache2.conf
-
-# Exposer le port 80
-EXPOSE 80
-
+#EXPOSE 80
 # Installation et configuration d'OpenSSH
 RUN mkdir /var/run/sshd && \
     ssh-keygen -A && \
