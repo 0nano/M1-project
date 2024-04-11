@@ -29,7 +29,7 @@ RUN sed -i 's#AllowOverride none#AllowOverride All#' /etc/apache2/httpd.conf && 
     mkdir -p /run/apache2
 
 # Démarrer les services Apache et MySQL au démarrage du conteneur
-CMD httpd -D FOREGROUND && /etc/init.d/mysql start && tail -f /dev/null 
+CMD /etc/init.d/apache2 start && /etc/init.d/mysql start && tail -f /dev/null
 # Attention httpd doit être demarrer systemcl 
 # voir alpine ssh 
 # Pour rendre l'apahce indépendant du docker 
