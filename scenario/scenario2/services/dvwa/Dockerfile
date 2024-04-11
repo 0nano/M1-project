@@ -41,7 +41,7 @@ RUN useradd -m labuser && \
 
 
 # Exposer le port 80 pour que guaca le trouve
-#EXPOSE 5000
+EXPOSE 80
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
