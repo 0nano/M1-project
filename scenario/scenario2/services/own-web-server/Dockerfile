@@ -36,6 +36,10 @@ CMD httpd -D FOREGROUND && /etc/init.d/mysql start && tail -f /dev/null
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
+
+# Removing windows /r character
+RUN sed -i -e 's/\r$//' /entry.sh 
+
 ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh server
