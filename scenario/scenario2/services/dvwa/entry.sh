@@ -6,4 +6,4 @@ if [ -n "$GW" ]; then
 else
         echo "GW env parameter not set"
         echo "Keeping defaults"
-fi
+fiexec $@
