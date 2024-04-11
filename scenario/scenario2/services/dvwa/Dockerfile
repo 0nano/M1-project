@@ -52,6 +52,5 @@ RUN sed -i -e 's/\r$//' /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
 # Démarrer Apache et SSH au lancement du conteneur
-CMD ["bash", "-c", "service apache2 start && /usr/sbin/sshd -D"]
-
+CMD ["/usr/sbin/sshd","-D"] 
 

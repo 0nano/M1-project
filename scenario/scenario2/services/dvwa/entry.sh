@@ -9,3 +9,5 @@ else
 fi
 exec $@
 
+service apache2 start
+
