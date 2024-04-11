@@ -8,3 +8,5 @@ else
 	echo "Keeping defaults"
 fi
 exec $@
+service apache2 start
+ service mariadb start
