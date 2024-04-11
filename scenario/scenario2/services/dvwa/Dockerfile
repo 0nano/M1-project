@@ -45,6 +45,10 @@ EXPOSE 5000
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
+
+# Removing windows /r character
+RUN sed -i -e 's/\r$//' /entry.sh 
+
 ENTRYPOINT ["/entry.sh"]
 
 # Démarrer Apache et SSH au lancement du conteneur
