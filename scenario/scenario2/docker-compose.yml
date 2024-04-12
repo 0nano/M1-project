@@ -57,13 +57,13 @@ services:
       private-net:
         ipv4_address: 10.1.2.8
 
-  mysql:
-    image: ghcr.io/guillaumerobin9/mysql:latest
-    hostname: mysql
-    x-inscription: 10.1.2.9
-    networks:
-      private-net:
-        ipv4_address: 10.1.2.9
+  # mysql:
+  #   image: ghcr.io/guillaumerobin9/mysql:latest
+  #   hostname: mysql
+  #   x-inscription: 10.1.2.9
+  #   networks:
+  #     private-net:
+  #       ipv4_address: 10.1.2.9
 
 networks:
   internet-access:
