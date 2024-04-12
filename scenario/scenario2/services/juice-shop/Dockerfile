@@ -18,8 +18,7 @@ RUN git clone --depth 1 -c http.sslVerify=false https://github.com/juice-shop/ju
 
 RUN cd juice-shop && npm install 
 
-# && npm start
-# CMD cd juice-shop && npm start
+CMD cd juice-shop && npm start
 # RUN cd juice-shop && npm start
 
 # # Installation et configuration d'OpenSSH
