@@ -43,10 +43,10 @@ services:
   juice-shop:
     image: ghcr.io/guillaumerobin9/juice-shop:latest
     hostname: juice-shop
-    x-inscription: 10.1.2.8
+    x-inscription: 10.1.2.6
     networks:
       private-net:
-        ipv4_address: 10.1.2.8
+        ipv4_address: 10.1.2.6
 
   # mysql:
   #   image: ghcr.io/guillaumerobin9/mysql:latest
