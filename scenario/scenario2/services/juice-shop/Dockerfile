@@ -8,24 +8,24 @@ RUN apt-get update && \
         sudo \
         vim \
         nano \
-        --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
-
-# Supprimer le répertoire /var/www/html s'il existe déjà
-RUN rm -rf /var/www/html
+        nodejs \
+        npm \
+        sqlite3 \
+        ca-certificates \
+        curl
 
 RUN git clone --depth 1 -c http.sslVerify=false https://github.com/juice-shop/juice-shop.git
 
-RUN  cd juice-shop
+RUN cd juice-shop && npm install 
 
-RUN npm install
+# && npm start
+# CMD cd juice-shop && npm start
+# RUN cd juice-shop && npm start
 
-RUN npm start
-
-# Installation et configuration d'OpenSSH
+# # Installation et configuration d'OpenSSH
 RUN mkdir /var/run/sshd && \
     ssh-keygen -A && \
-    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
+        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
 
 # Création de l'utilisateur labuser avec des privilèges sudo
 RUN useradd -m labuser && \
@@ -37,7 +37,20 @@ EXPOSE 80
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
+
+# Removing windows /r character
+RUN sed -i -e 's/\r$//' /entry.sh 
+
 ENTRYPOINT ["/entry.sh"]
 
 # Démarrer Apache et SSH au lancement du conteneur
-CMD ["/usr/sbin/sshd -D"]
+CMD /usr/sbin/sshd -D && cd juice-shop && npm start
+
+
+
+
+# # Supprimer le répertoire /var/www/html s'il existe déjà
+# # RUN rm -rf /var/www/html
+
+
+
