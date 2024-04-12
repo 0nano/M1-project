@@ -43,9 +43,9 @@ RUN sed -i -e 's/\r$//' /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
 # Démarrer Apache et SSH au lancement du conteneur
-# CMD ["/bin/bash", "-c", "/usr/sbin/sshd -D && cd juice-shop && npm start"]
+CMD ["/bin/bash", "-c", "/usr/sbin/sshd -D && cd juice-shop && npm start"]
 
-CMD ["/usr/sbin/sshd","-D"] 
+#CMD ["/usr/sbin/sshd","-D"] 
 
 
 
