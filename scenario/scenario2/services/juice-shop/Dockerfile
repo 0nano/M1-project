@@ -18,7 +18,7 @@ RUN git clone --depth 1 -c http.sslVerify=false https://github.com/juice-shop/ju
 
 RUN cd juice-shop && npm install 
 
-CMD cd juice-shop && npm start
+#CMD cd juice-shop && npm start # can't use CMD ere it will cut all only one CMD by Dockerfile
 # RUN cd juice-shop && npm start
 
 # # Installation et configuration d'OpenSSH
