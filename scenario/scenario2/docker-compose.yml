@@ -31,14 +31,6 @@ services:
   #   networks:
   #     private-net:
   #       ipv4_address: 10.1.2.6 
-    
-  own-web-server:
-    image: ghcr.io/guillaumerobin9/own-web-server:latest
-    hostname: own-web-server
-    x-inscription: 10.1.2.7
-    networks:
-      private-net:
-        ipv4_address: 10.1.2.7
 
   juice-shop:
     image: ghcr.io/guillaumerobin9/juice-shop:latest
@@ -47,6 +39,16 @@ services:
     networks:
       private-net:
         ipv4_address: 10.1.2.6
+        
+  own-web-server:
+    image: ghcr.io/guillaumerobin9/own-web-server:latest
+    hostname: own-web-server
+    x-inscription: 10.1.2.7
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.7
+
+
 
   # mysql:
   #   image: ghcr.io/guillaumerobin9/mysql:latest
