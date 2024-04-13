@@ -32,7 +32,7 @@ RUN useradd -m labuser && \
     usermod -aG sudo labuser
 
 # Exposer le port 80 sur lequel l'application s'exécute
-EXPOSE 80
+#EXPOSE 80
 EXPOSE 3000
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
