@@ -1,0 +1,76 @@
+# scenario3.yml
+
+# Déploiement en mode local
+- hosts: localhost
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    region: us-east-1
+    instance_type: t2.micro
+    key_name: vockey # Change for your key pair
+    sec_group: "test-security-group"
+    image_id: ami-058bd2d568351da34 # Debian 12 OS  
+  vars_files:
+    - config_vars.yml
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:       
+    - name: "Lance le docker compose pour installer les services"
+      shell: "docker-compose up -d"
+      when: mode == "local" and supp == "false"
+
+    - name: "Add route for guacd"
+      shell: "docker network connect private-net-scenario3 guacd && docker network connect internet-access-scenario3 guacd"
+      when: mode == "local" and supp == "false"
+
+    - name: "Add hosts IP to inventory"
+      add_host:
+        name: "{{ IP_EC2 }}"
+        groups: ec2_instances
+      when: mode == "aws" and supp == "false"
+
+     # Suppression des dockers
+    - name: "Suppression des routes pour guacd"
+      shell: "docker network disconnect private-net-scenario3 guacd && docker network disconnect internet-access-scenario3 guacd"
+      when: mode == "local" and supp == "true"
+
+    - name: "Suppression des dockers"
+      shell: "docker-compose down"
+      when: mode == "local" and supp == "true"
+
+
+- name: "Deploiement de l'instance et de ses services via AWS"
+  hosts: ec2_instances
+  remote_user: admin
+  become: true
+  vars_files:
+    - config_vars.yml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  
+    ansible_ssh_private_key_file: "{{ ssh_key }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  environment:
+    AWS_SHARED_CREDENTIALS_FILE: "{{ aws_creds }}"
+  tasks:
+    - name: move to docker-compose directory
+      shell: "cd /home/admin/project/scenario/scenario3"
+      when: mode == "aws" and supp == "false"
+      
+    - name: "Lance le docker compose pour installer les services"
+      shell: "cd /home/admin/project/scenario/scenario3 && docker compose up -d"
+      when: mode == "aws" and supp == "false"
+
+    - name: "Add route for guacd"  # Weird but the network created in docker-compose has a service name as prefix
+      shell: "docker network connect private-net-scenario3 guacd && docker network connect internet-access-scenario3 guacd"
+      when: mode == "aws" and supp == "false"
+
+    - name: "Suppression des routes pour guacd"
+      shell: "docker network disconnect private-net-scenario3 guacd && docker network disconnect internet-access-scenario3 guacd"
+      when: mode == "aws" and supp == "true"
+
+    - name: "Suppression des dockers"
+      shell: "docker compose down"
+      when: mode == "aws" and supp == "true"
+      args:
+        chdir: /home/admin/project/scenario/scenario3
+
