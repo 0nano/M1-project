@@ -7,7 +7,7 @@ RUN apk update
 RUN apk add openssh sudo --no-cache
 
 # Installing optional tools
-RUN apk add tshark tcpdump vim nano --no-cache
+RUN apk add tshark tcpdump ncftp vim nano --no-cache
 
 # Creating the ssh keys and the sudo group
 RUN ssh-keygen -A && addgroup sudo
