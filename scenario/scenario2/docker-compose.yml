@@ -24,13 +24,13 @@ services:
       private-net:
         ipv4_address: 10.1.2.5 # a modifi pour pas empiter sur le reseau du scenario1 
 
-  # dvwa:
-  #   image: ghcr.io/guillaumerobin9/dvwa:latest 
-  #   hostname: dvwa
-  #   x-inscription: 10.1.2.6 
-  #   networks:
-  #     private-net:
-  #       ipv4_address: 10.1.2.6 
+  dvwa:
+    image: ghcr.io/guillaumerobin9/dvwa:latest 
+    hostname: dvwa
+    x-inscription: 10.1.2.6 
+    networks:
+      private-net:
+        ipv4_address: 10.1.2.6 
 
   juice-shop:
     image: ghcr.io/guillaumerobin9/juice-shop:latest
