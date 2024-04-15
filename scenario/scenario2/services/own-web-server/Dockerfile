@@ -39,12 +39,20 @@ RUN sed -i 's#DocumentRoot /var/www/html#DocumentRoot /var/www/localhost/htdocs#
     sed -i 's#<Directory /var/www/html>#<Directory /var/www/localhost/htdocs>#' /etc/apache2/apache2.conf && \
     mkdir -p /run/apache2
 
+RUN mkdir -p /var/run/mysqld
+RUN chown mysql:mysql /var/run/mysqld
 
 # Attention httpd doit être demarrer systemcl 
 # voir alpine ssh 
 # Pour rendre l'apahce indépendant du docker 
 
+# Configurer MySQL pour écouter sur toutes les interfaces
+RUN sed -i 's/bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/' /etc/mysql/my.cnf
+
+
 EXPOSE 80
+
+EXPOSE 3306 
 
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh

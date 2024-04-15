@@ -8,3 +8,4 @@ else
 	echo "Keeping defaults"
 fi
 exec $@
+# npm start

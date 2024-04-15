@@ -38,8 +38,6 @@ ENTRYPOINT ["/entry.sh"]
 # demarraer apache et mariadb 
 CMD ["/usr/sbin/sshd","-D"] 
 
-
-
 # Partie 2 apache
 
 FROM php:apache AS php-apache
