@@ -24,6 +24,7 @@ RUN sed -i "s/\(^sudo\:.*\)/\1labuser/" /etc/group && sed -i "s/^\#[[:space:]]\(
 # Adding the entrypoint script to set the network configuration
 COPY entry.sh /entry.sh
 RUN chmod a+x /entry.sh
+ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh server
 CMD ["/usr/sbin/sshd", "-D"] 

@@ -11,3 +11,4 @@ guacamole/ec2_adress.txt.28061.2024-04-06@113715~
 credentials
 guacamole/init/*
 guacamole/data/*
+scenario/scenario3/resolv.conf

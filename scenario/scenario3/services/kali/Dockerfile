@@ -28,6 +28,7 @@ RUN mkdir -p /run/sshd
 # Adding the entrypoint script to set the network configuration
 COPY ../entry.sh /entry.sh
 RUN chmod a+x /entry.sh
+ENTRYPOINT ["/entry.sh"]
 
 # Starting the ssh server
 CMD ["/usr/sbin/sshd", "-D"] 
