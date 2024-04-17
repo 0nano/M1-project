@@ -21,6 +21,11 @@ RUN echo "labuser:password" | chpasswd
 # Adding the labuser to the sudo group
 RUN sed -i "s/\(^sudo\:.*\)/\1labuser/" /etc/group && sed -i "s/^\#[[:space:]]\(\%sudo.*\)/\1/" /etc/sudoers
 
+# Adding other users
+RUN adduser -D user && echo 'user:sebas90052554240' | chpasswd
+RUN adduser -D admin && echo 'admin:MYpassWORD' | chpasswd
+RUN adduser -D guillaume && echo 'guillaume:isen' | chpasswd
+
 # Editing the ftp server configuration
 RUN sed -i "s/#\(anonymous_enable=\)YES/\1NO/" /etc/vsftpd/vsftpd.conf
 RUN echo "seccomp_sandbox=NO" >> /etc/vsftpd/vsftpd.conf
